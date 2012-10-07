@@ -92,7 +92,7 @@ ActiveAdmin.setup do |config|
   # roots for each namespace.
   #
   # Default:
-  # config.root_to = 'dashboard#index'
+  config.root_to = 'dashboard#index'
 
   # == Admin Comments
   #
@@ -152,7 +152,11 @@ ActiveAdmin::ResourceController.class_eval do
   protected
 
   def current_ability
-    @current_ability ||= AdminAbility.new(current_admin_user)
+    @current_ability ||= Ability.new(current_admin_user)
+  end
+  
+  rescue_from CanCan::AccessDenied do |exception|
+      redirect_to admin_dashboard_path, :alert => exception.message
   end
   
 end
