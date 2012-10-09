@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121007040831) do
+ActiveRecord::Schema.define(:version => 20121008164627) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -28,6 +28,13 @@ ActiveRecord::Schema.define(:version => 20121007040831) do
   add_index "active_admin_comments", ["namespace"], :name => "index_active_admin_comments_on_namespace"
   add_index "active_admin_comments", ["resource_type", "resource_id"], :name => "index_admin_notes_on_resource_type_and_resource_id"
 
+  create_table "admin_user_teams", :force => true do |t|
+    t.integer "admin_user_id"
+    t.integer "team_id"
+  end
+
+  add_index "admin_user_teams", ["admin_user_id", "team_id"], :name => "index_admin_user_teams_on_admin_user_id_and_team_id"
+
   create_table "admin_users", :force => true do |t|
     t.string   "email",                  :default => "", :null => false
     t.string   "encrypted_password",     :default => "", :null => false
@@ -41,6 +48,8 @@ ActiveRecord::Schema.define(:version => 20121007040831) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+    t.string   "phone",                  :default => ""
+    t.string   "fullname",               :default => ""
   end
 
   add_index "admin_users", ["email"], :name => "index_admin_users_on_email", :unique => true
@@ -53,15 +62,100 @@ ActiveRecord::Schema.define(:version => 20121007040831) do
 
   add_index "admin_users_roles", ["admin_user_id", "role_id"], :name => "index_admin_users_roles_on_admin_user_id_and_role_id"
 
+  create_table "entities", :force => true do |t|
+    t.string   "kota",       :default => ""
+    t.string   "alamat",     :default => ""
+    t.string   "phone",      :default => ""
+    t.string   "fax",        :default => ""
+    t.string   "status",     :default => ""
+    t.string   "keterangan", :default => ""
+    t.string   "direktur",   :default => ""
+    t.string   "kecamatan",  :default => ""
+    t.string   "kabupaten",  :default => ""
+    t.string   "provinsi",   :default => ""
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+  end
+
+  create_table "examinations", :force => true do |t|
+    t.string   "uraian",      :default => ""
+    t.string   "rekomendasi", :default => ""
+    t.string   "tanggapan",   :default => ""
+    t.string   "status",      :default => ""
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
+  end
+
+  create_table "lhps", :force => true do |t|
+    t.string   "keterangan",          :default => ""
+    t.string   "pre_keterangan",      :default => ""
+    t.string   "post_keterangan",     :default => ""
+    t.datetime "tanggal_awal"
+    t.datetime "tanggal_akhir"
+    t.string   "program_pemeriksaan", :default => ""
+    t.string   "status",              :default => ""
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
+  end
+
+  create_table "pkpt_recapitulations", :force => true do |t|
+    t.integer  "work_plans_category_id"
+    t.string   "keterangan_pembuka"
+    t.string   "keterangan_penutup"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
+  add_index "pkpt_recapitulations", ["work_plans_category_id"], :name => "index_pkpt_recapitulations_on_work_plans_category_id"
+
+  create_table "pkpts", :force => true do |t|
+    t.integer  "entity_id"
+    t.string   "keterangan_awal", :default => ""
+    t.datetime "periode"
+    t.string   "status",          :default => ""
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
+  end
+
+  add_index "pkpts", ["entity_id"], :name => "index_pkpts_on_entity_id"
+
   create_table "roles", :force => true do |t|
     t.string   "name"
     t.integer  "resource_id"
     t.string   "resource_type"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+    t.string   "keterangan",    :default => ""
   end
 
   add_index "roles", ["name", "resource_type", "resource_id"], :name => "index_roles_on_name_and_resource_type_and_resource_id"
   add_index "roles", ["name"], :name => "index_roles_on_name"
+
+  create_table "teams", :force => true do |t|
+    t.integer  "lhp_id"
+    t.string   "name",       :default => ""
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+  end
+
+  add_index "teams", ["lhp_id"], :name => "index_teams_on_lhp_id"
+
+  create_table "work_plan_categories", :force => true do |t|
+    t.string   "name",        :default => ""
+    t.string   "description", :default => ""
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
+  end
+
+  create_table "work_plans", :force => true do |t|
+    t.integer  "work_plans_category_id"
+    t.integer  "lhp_id"
+    t.string   "description",            :default => ""
+    t.string   "status",                 :default => ""
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+  end
+
+  add_index "work_plans", ["work_plans_category_id", "lhp_id"], :name => "index_work_plans_on_work_plans_category_id_and_lhp_id"
 
 end
