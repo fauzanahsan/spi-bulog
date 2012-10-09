@@ -1,8 +1,7 @@
 class CreatePkpts < ActiveRecord::Migration
   def up
     create_table :pkpts do |t|
-      t.string :pre_keterangan, :default => ""
-      t.string :post_keterangan, :default => ""
+      t.string :keterangan_awal, :default => ""
       t.datetime :periode
       t.string :status, :default => ""
       
