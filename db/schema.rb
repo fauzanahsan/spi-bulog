@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121008164627) do
+ActiveRecord::Schema.define(:version => 20121009154208) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(:version => 20121008164627) do
   add_index "admin_user_teams", ["admin_user_id", "team_id"], :name => "index_admin_user_teams_on_admin_user_id_and_team_id"
 
   create_table "admin_users", :force => true do |t|
+    t.integer  "entity_id"
     t.string   "email",                  :default => "", :null => false
     t.string   "encrypted_password",     :default => "", :null => false
     t.string   "reset_password_token"
@@ -53,6 +54,7 @@ ActiveRecord::Schema.define(:version => 20121008164627) do
   end
 
   add_index "admin_users", ["email"], :name => "index_admin_users_on_email", :unique => true
+  add_index "admin_users", ["entity_id"], :name => "index_admin_users_on_entity_id"
   add_index "admin_users", ["reset_password_token"], :name => "index_admin_users_on_reset_password_token", :unique => true
 
   create_table "admin_users_roles", :id => false, :force => true do |t|
@@ -86,7 +88,17 @@ ActiveRecord::Schema.define(:version => 20121008164627) do
     t.datetime "updated_at",                  :null => false
   end
 
+  create_table "lhp_examinations", :force => true do |t|
+    t.integer  "lhp_id"
+    t.integer  "examination_id"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "lhp_examinations", ["lhp_id", "examination_id"], :name => "index_lhp_examinations_on_lhp_id_and_examination_id"
+
   create_table "lhps", :force => true do |t|
+    t.integer  "entity_id"
     t.string   "keterangan",          :default => ""
     t.string   "pre_keterangan",      :default => ""
     t.string   "post_keterangan",     :default => ""
@@ -98,15 +110,26 @@ ActiveRecord::Schema.define(:version => 20121008164627) do
     t.datetime "updated_at",                          :null => false
   end
 
+  add_index "lhps", ["entity_id"], :name => "index_lhps_on_entity_id"
+
   create_table "pkpt_recapitulations", :force => true do |t|
-    t.integer  "work_plans_category_id"
+    t.integer  "pkpt_id"
     t.string   "keterangan_pembuka"
     t.string   "keterangan_penutup"
-    t.datetime "created_at",             :null => false
-    t.datetime "updated_at",             :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
   end
 
-  add_index "pkpt_recapitulations", ["work_plans_category_id"], :name => "index_pkpt_recapitulations_on_work_plans_category_id"
+  add_index "pkpt_recapitulations", ["pkpt_id"], :name => "index_pkpt_recapitulations_on_pkpt_id"
+
+  create_table "pkpt_work_plans", :force => true do |t|
+    t.integer  "pkpt_id"
+    t.integer  "work_plan_id"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  add_index "pkpt_work_plans", ["pkpt_id", "work_plan_id"], :name => "index_pkpt_work_plans_on_pkpt_id_and_work_plan_id"
 
   create_table "pkpts", :force => true do |t|
     t.integer  "entity_id"
@@ -150,12 +173,13 @@ ActiveRecord::Schema.define(:version => 20121008164627) do
   create_table "work_plans", :force => true do |t|
     t.integer  "work_plans_category_id"
     t.integer  "lhp_id"
+    t.integer  "team_id"
     t.string   "description",            :default => ""
     t.string   "status",                 :default => ""
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
   end
 
-  add_index "work_plans", ["work_plans_category_id", "lhp_id"], :name => "index_work_plans_on_work_plans_category_id_and_lhp_id"
+  add_index "work_plans", ["work_plans_category_id", "lhp_id", "team_id"], :name => "work_plans_cat_lhp_team"
 
 end

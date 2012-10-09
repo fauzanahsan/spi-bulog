@@ -12,4 +12,5 @@ class AdminUser < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me, :role_ids
   # attr_accessible :title, :body
+  has_many :admin_user_teams
 end

@@ -1,14 +1,14 @@
 class CreatePkptRecapitulations < ActiveRecord::Migration
   def up
     create_table :pkpt_recapitulations do |t|
-      t.references :work_plans_category
+      t.references :pkpt
       t.string :keterangan_pembuka
       t.string :keterangan_penutup
       
       t.timestamps
     end
     
-    add_index :pkpt_recapitulations, :work_plans_category_id
+    add_index :pkpt_recapitulations, :pkpt_id
   end
   
   def down

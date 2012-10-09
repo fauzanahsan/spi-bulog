@@ -1,3 +1,4 @@
 class PkptRecapitulation < ActiveRecord::Base
-  # attr_accessible :title, :body
+  attr_accessible :keterangan_pembuka, :keterangan_penutup
+  belongs_to :pkpt
 end

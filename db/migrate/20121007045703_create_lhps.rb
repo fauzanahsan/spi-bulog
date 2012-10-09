@@ -1,6 +1,7 @@
 class CreateLhps < ActiveRecord::Migration
   def up
     create_table :lhps do |t|
+      t.references :entity
       t.string :keterangan, :default => ""
       t.string :pre_keterangan, :default => ""
       t.string :post_keterangan, :default => ""
@@ -11,6 +12,7 @@ class CreateLhps < ActiveRecord::Migration
       
       t.timestamps
     end
+    add_index :lhps, :entity_id
   end
   
   def down
