@@ -2,12 +2,13 @@ class CreateWorkPlans < ActiveRecord::Migration
   def up
     create_table :work_plans do |t|
       t.references :work_plans_category
+      t.references :lhp
       t.string :description, :default => ""
       t.string :status, :default => ""
       
       t.timestamps
     end
-    add_index :work_plans, :work_plans_category_id
+    add_index(:work_plans, [ :work_plans_category_id, :lhp_id ])
   end
   
   def down
