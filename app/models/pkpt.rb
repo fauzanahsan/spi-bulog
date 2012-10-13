@@ -5,4 +5,6 @@ class Pkpt < ActiveRecord::Base
   
   attr_accessible :keterangan_awal, :periode, :status, :entity_id, :notes
   
+  DOC_STATUS = ['Diinput', 'Dikirim', 'Disetujui', 'Dikembalikan']
+  
 end
