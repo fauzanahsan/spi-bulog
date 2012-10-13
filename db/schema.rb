@@ -80,37 +80,32 @@ ActiveRecord::Schema.define(:version => 20121013032354) do
   end
 
   create_table "examinations", :force => true do |t|
+    t.integer  "lhp_id"
     t.string   "uraian",      :default => ""
     t.string   "rekomendasi", :default => ""
     t.string   "tanggapan",   :default => ""
-    t.string   "status",      :default => ""
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
+    t.string   "status",      :default => "Diinput"
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
   end
 
-  create_table "lhp_examinations", :force => true do |t|
-    t.integer  "lhp_id"
-    t.integer  "examination_id"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
-  end
-
-  add_index "lhp_examinations", ["lhp_id", "examination_id"], :name => "index_lhp_examinations_on_lhp_id_and_examination_id"
+  add_index "examinations", ["lhp_id"], :name => "index_examinations_on_lhp_id"
 
   create_table "lhps", :force => true do |t|
     t.integer  "entity_id"
+    t.integer  "work_plan_id"
     t.string   "keterangan",          :default => ""
     t.string   "pre_keterangan",      :default => ""
     t.string   "post_keterangan",     :default => ""
     t.datetime "tanggal_awal"
     t.datetime "tanggal_akhir"
     t.string   "program_pemeriksaan", :default => ""
-    t.string   "status",              :default => ""
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.string   "status",              :default => "Diinput"
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
   end
 
-  add_index "lhps", ["entity_id"], :name => "index_lhps_on_entity_id"
+  add_index "lhps", ["entity_id", "work_plan_id"], :name => "lhp_entity_work_plan"
 
   create_table "pkpt_recapitulations", :force => true do |t|
     t.integer  "pkpt_id"
@@ -122,22 +117,13 @@ ActiveRecord::Schema.define(:version => 20121013032354) do
 
   add_index "pkpt_recapitulations", ["pkpt_id"], :name => "index_pkpt_recapitulations_on_pkpt_id"
 
-  create_table "pkpt_work_plans", :force => true do |t|
-    t.integer  "pkpt_id"
-    t.integer  "work_plan_id"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
-  end
-
-  add_index "pkpt_work_plans", ["pkpt_id", "work_plan_id"], :name => "index_pkpt_work_plans_on_pkpt_id_and_work_plan_id"
-
   create_table "pkpts", :force => true do |t|
     t.integer  "entity_id"
     t.string   "keterangan_awal", :default => ""
-    t.datetime "periode"
-    t.string   "status",          :default => ""
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
+    t.string   "periode"
+    t.string   "status",          :default => "Diinput"
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
     t.text     "notes"
   end
 
@@ -156,14 +142,14 @@ ActiveRecord::Schema.define(:version => 20121013032354) do
   add_index "roles", ["name"], :name => "index_roles_on_name"
 
   create_table "teams", :force => true do |t|
-    t.integer  "lhp_id"
-    t.string   "name",       :default => ""
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.integer  "work_plan_id"
+    t.string   "name",         :default => ""
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
     t.integer  "leader_id"
   end
 
-  add_index "teams", ["lhp_id"], :name => "index_teams_on_lhp_id"
+  add_index "teams", ["work_plan_id"], :name => "index_teams_on_work_plan_id"
 
   create_table "work_plan_categories", :force => true do |t|
     t.string   "name",        :default => ""
@@ -174,14 +160,16 @@ ActiveRecord::Schema.define(:version => 20121013032354) do
 
   create_table "work_plans", :force => true do |t|
     t.integer  "work_plan_category_id"
-    t.integer  "lhp_id"
+    t.integer  "pkpt_id"
     t.integer  "team_id"
-    t.string   "description",           :default => ""
-    t.string   "status",                :default => ""
-    t.datetime "created_at",                            :null => false
-    t.datetime "updated_at",                            :null => false
+    t.text     "description"
+    t.text     "catatan_pengembalian"
+    t.datetime "tanggal_proses"
+    t.string   "status",                :default => "Diinput"
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
   end
 
-  add_index "work_plans", ["work_plan_category_id", "lhp_id", "team_id"], :name => "work_plan_cat_lhp_team"
+  add_index "work_plans", ["work_plan_category_id", "pkpt_id", "team_id"], :name => "work_plan_cat_lhp_team"
 
 end

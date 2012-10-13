@@ -3,8 +3,8 @@ class CreatePkpts < ActiveRecord::Migration
     create_table :pkpts do |t|
       t.references :entity
       t.string :keterangan_awal, :default => ""
-      t.datetime :periode
-      t.string :status, :default => ""
+      t.string :periode
+      t.string :status, :default => "Diinput"
       
       t.timestamps
     end
