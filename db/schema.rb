@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121010020902) do
+ActiveRecord::Schema.define(:version => 20121013032354) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -138,6 +138,7 @@ ActiveRecord::Schema.define(:version => 20121010020902) do
     t.string   "status",          :default => ""
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
+    t.text     "notes"
   end
 
   add_index "pkpts", ["entity_id"], :name => "index_pkpts_on_entity_id"
@@ -172,15 +173,15 @@ ActiveRecord::Schema.define(:version => 20121010020902) do
   end
 
   create_table "work_plans", :force => true do |t|
-    t.integer  "work_plans_category_id"
+    t.integer  "work_plan_category_id"
     t.integer  "lhp_id"
     t.integer  "team_id"
-    t.string   "description",            :default => ""
-    t.string   "status",                 :default => ""
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.string   "description",           :default => ""
+    t.string   "status",                :default => ""
+    t.datetime "created_at",                            :null => false
+    t.datetime "updated_at",                            :null => false
   end
 
-  add_index "work_plans", ["work_plans_category_id", "lhp_id", "team_id"], :name => "work_plans_cat_lhp_team"
+  add_index "work_plans", ["work_plan_category_id", "lhp_id", "team_id"], :name => "work_plan_cat_lhp_team"
 
 end

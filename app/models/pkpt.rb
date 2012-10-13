@@ -3,6 +3,6 @@ class Pkpt < ActiveRecord::Base
   has_many :pkpt_work_plans
   has_many :pkpt_recapitulations
   
-  attr_accessible :keterangan_awal, :periode, :status
+  attr_accessible :keterangan_awal, :periode, :status, :entity_id, :notes
   
 end
