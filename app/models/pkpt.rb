@@ -7,4 +7,9 @@ class Pkpt < ActiveRecord::Base
   
   DOC_STATUS = ['Diinput', 'Dikirim', 'Disetujui', 'Dikembalikan']
   
+  def disetujui
+    self.status = "Disetujui"
+    save
+  end
+  
 end

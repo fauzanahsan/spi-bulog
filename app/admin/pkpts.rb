@@ -2,6 +2,12 @@ ActiveAdmin.register Pkpt do
   menu :label => "PKPT"
   controller.authorize_resource
   
+  filter :id, :label => "Kode PKPT"
+  filter :periode, :as => :select, :collection => ['2012','2013','2014']  
+  filter :status, :as => :select, :collection => ['Diinput','Disetujui','Dikirim','Dikembalikan']  
+  filter :wilayah 
+  filter :created_at 
+  
   form do |f| 
     f.inputs do 
       f.input :wilayah_mock, :label => "Wilayah", :input_html => { :value => current_admin_user.entity.provinsi, :disabled => true } 
@@ -72,20 +78,23 @@ ActiveAdmin.register Pkpt do
       row 'Rencana Kerja' do
       
         table_for pkpt.work_plans do
-          column("Kode", :id) 
+          column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
           column("Deskripsi", :description)
           column("Staff Input", :staff_input)
           column("Kategori") { |wp| wp.work_plan_category.name }
           column("Status", :status)
           column("Tanggal") { |wp| wp.tanggal_proses.strftime("%d %B %Y") }
-          column("Proses") { |wp| link_to("Kembalikan", approve_admin_pkpt_path, :method => :put) }  
+          column("Proses") { |wp| if !wp.returned? 
+                                    link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put) 
+                                  end
+          }  
         end
       
       end
       
       row ' ' do
         link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") + "   " + 
-        link_to("Setujui PKPT", approve_admin_pkpt_path(:pkpt_id => pkpt.id), :method => :put, :class => "button")
+        link_to("Setujui PKPT", approve_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button")
       end
       
     end
@@ -93,9 +102,17 @@ ActiveAdmin.register Pkpt do
   end
   
   member_action :approve, :method => :put do
-    
+    pkpt = Pkpt.find(params[:id])
+    pkpt.disetujui
     flash[:notice] = "Success Approved"
     redirect_to admin_pkpts_path 
+  end
+  
+  member_action :work_plan_return, :method => :put do
+    work_plan = WorkPlan.find(params[:id])
+    work_plan.dikembalikan
+    flash[:notice] = "Success Returned"
+    redirect_to admin_pkpt_path(params[:pkpt_id])
   end
   
 end

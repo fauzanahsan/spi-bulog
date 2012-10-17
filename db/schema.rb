@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121017051330) do
+ActiveRecord::Schema.define(:version => 20121017084013) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -163,13 +163,14 @@ ActiveRecord::Schema.define(:version => 20121017051330) do
     t.integer  "work_plan_category_id"
     t.integer  "pkpt_id"
     t.integer  "team_id"
-    t.text     "description"
     t.text     "catatan_pengembalian"
     t.datetime "tanggal_proses"
     t.string   "status",                :default => "Diinput"
     t.datetime "created_at",                                   :null => false
     t.datetime "updated_at",                                   :null => false
     t.string   "staff_input",           :default => ""
+    t.string   "description",           :default => ""
+    t.text     "work_plan_details"
   end
 
   add_index "work_plans", ["work_plan_category_id", "pkpt_id", "team_id"], :name => "work_plan_cat_lhp_team"
