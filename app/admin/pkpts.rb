@@ -84,12 +84,12 @@ ActiveAdmin.register Pkpt do
           column("Kategori") { |wp| wp.work_plan_category.name }
           column("Status", :status)
           column("Tanggal") { |wp| wp.tanggal_proses.strftime("%d %B %Y") }
-          column("Proses") { |wp| if !wp.returned? 
+          column("Proses") { |wp| #if !wp.returned? 
                                     #link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put) 
                                     link_to("Ubah", edit_admin_work_plan_path(wp.id))  + " " +
                                     link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) + " " +
                                     link_to("Tambah Tim", new_admin_team_path(:work_plan_id => wp.id), :method => :get)
-                                  end
+                                  #end
           }  
         end
       

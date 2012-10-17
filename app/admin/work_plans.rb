@@ -10,6 +10,7 @@ ActiveAdmin.register WorkPlan do
     column("Staff", :staff_input)
     column("Tanggal Proses"){ |wp| wp.tanggal_proses.strftime("%d %B %Y") } 
     column("Tanggal Dibuat", :created_at)
+    column("Proses"){ |wp| link_to("LHP", new_admin_lhp_path(:work_plan_id => wp.id)) } 
     default_actions
   end
   
