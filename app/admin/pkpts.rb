@@ -71,35 +71,21 @@ ActiveAdmin.register Pkpt do
       
       row 'Rencana Kerja' do
       
-        table_for pkpt.work_plans do |work_plan|
-          column "Kode" do 
-            work_plan.id
-          end
-          column "Deskripsi" do 
-            work_plan.description
-          end
-          column "Staff Input" do 
-            work_plan.staff_input
-          end
-          column "Kategori" do 
-            work_plan.work_plan_category_id
-          end
-          column "Status" do 
-            work_plan.work_plan_category_id
-          end
-          column "Tanggal" do 
-            work_plan.work_plan_category_id
-          end
-          column "Proses" do 
-            work_plan.work_plan_category_id
-          end      
+        table_for pkpt.work_plans do
+          column("Kode", :id) 
+          column("Deskripsi", :description)
+          column("Staff Input", :staff_input)
+          column("Kategori") { |wp| wp.work_plan_category.name }
+          column("Status", :status)
+          column("Tanggal") { |wp| wp.tanggal_proses.strftime("%d %B %Y") }
+          column("Proses") { |wp| link_to("Kembalikan", approve_admin_pkpt_path, :method => :put) }  
         end
       
       end
       
       row ' ' do
-        button_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt_id => pkpt.id), :method => :get) + "   " + 
-        button_to("Setujui PKPT", approve_admin_pkpt_path(:pkpt_id => pkpt.id), :method => :put)
+        link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") + "   " + 
+        link_to("Setujui PKPT", approve_admin_pkpt_path(:pkpt_id => pkpt.id), :method => :put, :class => "button")
       end
       
     end
