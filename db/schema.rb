@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121017084013) do
+ActiveRecord::Schema.define(:version => 20121017155615) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -99,10 +99,11 @@ ActiveRecord::Schema.define(:version => 20121017084013) do
     t.string   "post_keterangan",     :default => ""
     t.datetime "tanggal_awal"
     t.datetime "tanggal_akhir"
-    t.string   "program_pemeriksaan", :default => ""
     t.string   "status",              :default => "Diinput"
     t.datetime "created_at",                                 :null => false
     t.datetime "updated_at",                                 :null => false
+    t.text     "program_pemeriksaan"
+    t.text     "maksud_tujuan"
   end
 
   add_index "lhps", ["entity_id", "work_plan_id"], :name => "lhp_entity_work_plan"
@@ -162,7 +163,6 @@ ActiveRecord::Schema.define(:version => 20121017084013) do
   create_table "work_plans", :force => true do |t|
     t.integer  "work_plan_category_id"
     t.integer  "pkpt_id"
-    t.integer  "team_id"
     t.text     "catatan_pengembalian"
     t.datetime "tanggal_proses"
     t.string   "status",                :default => "Diinput"
@@ -173,6 +173,6 @@ ActiveRecord::Schema.define(:version => 20121017084013) do
     t.text     "work_plan_details"
   end
 
-  add_index "work_plans", ["work_plan_category_id", "pkpt_id", "team_id"], :name => "work_plan_cat_lhp_team"
+  add_index "work_plans", ["work_plan_category_id", "pkpt_id"], :name => "work_plan_cat_lhp_team"
 
 end
