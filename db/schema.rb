@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121013032354) do
+ActiveRecord::Schema.define(:version => 20121017014443) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(:version => 20121013032354) do
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
     t.text     "notes"
+    t.string   "wilayah",         :default => ""
   end
 
   add_index "pkpts", ["entity_id"], :name => "index_pkpts_on_entity_id"
