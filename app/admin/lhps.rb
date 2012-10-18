@@ -88,9 +88,39 @@ ActiveAdmin.register Lhp do
       row 'Program Pemeriksaan' do
         lhp.program_pemeriksaan
       end
+      
+      row 'Hasil Pemeriksaan' do
+      
+        table_for lhp.examinations do
+          column("ID") { |examination| link_to("#{examination.id}", admin_examination_path(examination.id)) } 
+          column("Uraian", :uraian)
+          column("Rekomendasi", :rekomendasi)
+          column("Tanggapan", :tanggapan)
+          column("Status", :status)
+          column("Tanggal") { |examination| examination.created_at.strftime("%d %B %Y") }
+          column("Proses") { |examination| #if !wp.returned? 
+                                    link_to("Ubah", edit_admin_examination_path(examination.id))  + " " +
+                                    link_to("Kembalikan", edit_admin_examination_path(examination.id, :dikembalikan => true))
+                                  #end
+          }  
+        end
+      
+      end
+      
+      row ' ' do
+        link_to("Tambah Hasil Pemeriksaan", new_admin_examination_path(:lhp => lhp.id), :method => :get, :class => "button") + "   " + 
+        link_to("Kirim LHP", send_report_admin_lhp_path(:id => lhp.id), :method => :put, :class => "button")
+      end
  
     end
     
+  end
+  
+  member_action :send_report, :method => :put do
+    lhp = Lhp.find(params[:id])
+    lhp.dikirim
+    flash[:notice] = "Success Sent"
+    redirect_to admin_pkpts_path 
   end
   
 end

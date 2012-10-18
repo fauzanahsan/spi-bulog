@@ -5,4 +5,10 @@ class Lhp < ActiveRecord::Base
   has_many :examinations
   belongs_to :entity
   belongs_to :work_plan
+  
+  def dikirim
+    self.status = "Dikirim"
+    save
+  end
+  
 end
