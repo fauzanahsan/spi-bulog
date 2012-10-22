@@ -72,7 +72,7 @@ ActiveAdmin.register Pkpt do
       end
       
       row 'Catatan' do
-        pkpt.notes
+        raw pkpt.notes.gsub(/\n/, '<br/>')
       end
       
       row 'Rencana Kerja' do
@@ -97,7 +97,8 @@ ActiveAdmin.register Pkpt do
       
       row ' ' do
         link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") + "   " + 
-        link_to("Setujui PKPT", approve_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button")
+        link_to("Setujui PKPT", approve_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") + "   " + 
+        link_to("Kirim PKPT", kirim_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button")
       end
       
     end
@@ -108,6 +109,13 @@ ActiveAdmin.register Pkpt do
     pkpt = Pkpt.find(params[:id])
     pkpt.disetujui
     flash[:notice] = "Success Approved"
+    redirect_to admin_pkpts_path 
+  end
+  
+  member_action :kirim, :method => :put do
+    pkpt = Pkpt.find(params[:id])
+    pkpt.dikirim
+    flash[:notice] = "Success Sent"
     redirect_to admin_pkpts_path 
   end
   

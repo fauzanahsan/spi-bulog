@@ -16,7 +16,7 @@ ActiveAdmin.register Examination do
     f.inputs do
       if params[:lhp]
         f.input :lhp_id, :as => :hidden, :input_html => { :value => params[:lhp] }  
-      else
+      elsif f.object.new_record?
         f.input :lhp
       end
       f.input :uraian #, :label => "Staff", :input_html => { :value => current_admin_user.fullname, :disabled => true } 

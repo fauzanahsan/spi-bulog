@@ -84,7 +84,7 @@ ActiveAdmin.register WorkPlan do
       end
       
       row 'Rencana Kerja' do
-        work_plan.work_plan_details
+        raw work_plan.work_plan_details.gsub(/\n/, '<br/>')
       end
       
     end
