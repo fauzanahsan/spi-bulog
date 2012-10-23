@@ -21,7 +21,12 @@ test:
   password: pass123
 
 production:
-  adapter: sqlite3
-  database: db/production.sqlite3
+  adapter: postgresql
+  database: spibulog_prod
   pool: 5
   timeout: 5000
+
+  # pool: 5
+   #   username: shido
+   #   password: pass123
+   #   database: db/production.sqlite3
