@@ -29,7 +29,7 @@ group :assets do
 end
 
 gem 'jquery-rails'
-gem 'activeadmin'
+gem "activeadmin", :git => "git://github.com/gregbell/active_admin.git"
 
 gem 'formtastic', '~> 2.1.1'
 gem 'rails-no-cache'
