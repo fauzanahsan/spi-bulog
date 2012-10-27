@@ -22,7 +22,6 @@ ActiveAdmin.register Pkpt do
     end
     # if !f.object.new_record?
     #       
-    #     #
     #        table_for f.object.work_plans do
     #          column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
     #          column("Deskripsi", :description)
@@ -86,10 +85,9 @@ ActiveAdmin.register Pkpt do
       
       row 'Rencana Kerja' do
       
-        table_for pkpt.work_plans do
+        table_for pkpt.work_plans.where(:created_by_id => current_admin_user.id) do
           column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
-          column("Deskripsi", :description)
-          column("Staff Input", :created_by)
+          column("Deskripsi", :work_plan_details)
           column("Kategori") { |wp| wp.work_plan_category.name }
           column("Status", :status)
           column("Tanggal") { |wp| wp.created_at.strftime("%d %B %Y") }
@@ -113,7 +111,7 @@ ActiveAdmin.register Pkpt do
       if current_admin_user.has_role? "Staff"
         row ' ' do
           link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") + " " +
-          link_to("Kirim Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button")
+          link_to("Kirim Rencana Kerja", wp_kirim_admin_pkpt_path(:pkpt => pkpt.id), :method => :put, :class => "button")
         end
       end
       
@@ -152,6 +150,14 @@ ActiveAdmin.register Pkpt do
     work_plan.dikembalikan
     flash[:notice] = "Success Returned"
     redirect_to admin_pkpt_path(params[:pkpt_id])
+  end
+  
+  member_action :wp_kirim, :method => :put do
+    WorkPlan.find(:all, :conditions => ['pkpt_id = ? and created_by_id = ?', params[:pkpt], current_admin_user.id]).each do |obj|
+      obj.update_attributes(:status => 'Dikirim')
+    end
+    flash[:notice] = "Success Sent"
+    redirect_to admin_pkpt_path(params[:pkpt])
   end
   
 end

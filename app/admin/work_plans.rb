@@ -44,6 +44,7 @@ ActiveAdmin.register WorkPlan do
         end
         f.input :work_plan_details, :label => "Rencana Kerja"
         f.input :created_by, :as => :hidden, :input_html => { :value => current_admin_user.fullname } 
+        f.input :created_by_id, :as => :hidden, :input_html => { :value => current_admin_user.id } 
         
         f.buttons
       end

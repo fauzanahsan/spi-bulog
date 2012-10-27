@@ -34,7 +34,7 @@ class Ability
     end
     
     if admin_user.has_role? "Staff Tata Usaha"
-      can :manage, Pkpt
+      can :manage, Recapitulation
     end
     
     if admin_user.has_role? "Ketua Tim"

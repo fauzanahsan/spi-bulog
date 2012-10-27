@@ -82,6 +82,31 @@ ActiveAdmin.register_page "Dashboard" do
           end #end panel
         end
         
+        if current_admin_user.has_role? "Staff Tata Usaha"
+          panel "Rekapitulasi PKPT" do
+            
+            table do   
+              th do 'Periode' end
+              th do 'Proses' end
+              
+              tr do
+                td do 
+                  "2012"
+                end
+    
+                td do
+                  if Recapitulation.find_by_periode("2012").nil?
+                    link_to("Buat", new_admin_recapitulation_path )  
+                  else
+                    link_to("Edit", edit_admin_recapitulation_path(Recapitulation.find_by_periode("2012").id))  
+                  end
+                end
+              end
+            
+            end #end table              
+          end #end panel
+        end
+        
         
       end
     end

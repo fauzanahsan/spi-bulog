@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121017155615) do
+ActiveRecord::Schema.define(:version => 20121027145425) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -126,13 +126,12 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
 
   create_table "pkpt_recapitulations", :force => true do |t|
     t.integer  "pkpt_id"
-    t.string   "keterangan_pembuka"
-    t.string   "keterangan_penutup"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
+    t.integer  "recapitulation_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
   end
 
-  add_index "pkpt_recapitulations", ["pkpt_id"], :name => "index_pkpt_recapitulations_on_pkpt_id"
+  add_index "pkpt_recapitulations", ["pkpt_id", "recapitulation_id"], :name => "index_pkpt_recapitulations_on_pkpt_id_and_recapitulation_id"
 
   create_table "pkpts", :force => true do |t|
     t.integer  "entity_id"
@@ -154,6 +153,15 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
   end
 
   add_index "pkpts", ["entity_id"], :name => "index_pkpts_on_entity_id"
+
+  create_table "recapitulations", :force => true do |t|
+    t.string   "periode",            :default => ""
+    t.text     "keterangan_pembuka"
+    t.text     "keterangan_penutup"
+    t.string   "status_rekap",       :default => "Belum Rekap"
+    t.datetime "created_at",                                    :null => false
+    t.datetime "updated_at",                                    :null => false
+  end
 
   create_table "roles", :force => true do |t|
     t.string   "name"
@@ -200,6 +208,7 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
     t.datetime "updated_at",                                   :null => false
     t.string   "description",           :default => ""
     t.text     "work_plan_details"
+    t.integer  "created_by_id"
   end
 
   add_index "work_plans", ["work_plan_category_id", "pkpt_id", "team_id"], :name => "work_plan_cat_lhp_team"
