@@ -9,7 +9,7 @@ class CreateEntities < ActiveRecord::Migration
       t.string :fax, :default => ""
       t.string :status, :default => ""
       t.string :keterangan, :default => ""
-      t.integer :kepala_entitas_id
+      t.string :kepala_entitas, :default => ""
       t.string :kecamatan, :default => ""
       t.string :kabupaten, :default => ""
       t.string :provinsi, :default => ""

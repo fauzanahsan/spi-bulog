@@ -19,29 +19,30 @@ ActiveAdmin.register WorkPlan do
       if params[:dikembalikan]
         f.input :work_plan_id_mock, :label => "Kode Rencana Kerja", :input_html => { :value => f.object.id, :disabled => true }
         f.input :pkpt_id_mock, :label => "Kode PKPT", :input_html => { :value => f.object.pkpt.id, :disabled => true }
-        f.input :penanggung_jawab_mock, :label => "Penanggung Jawab", :input_html => { :value => f.object.staff_input, :disabled => true }
+        #f.input :penanggung_jawab_mock, :label => "Penanggung Jawab", :input_html => { :value => f.object.staff_input, :disabled => true }
         f.input :input_staff_mock, :label => "Staff", :input_html => { :value => f.object.staff_input, :disabled => true }
         f.input :work_plan_category_mock, :label => "Kategori Rencana Kerja", :input_html => { :value => f.object.work_plan_category.name, :disabled => true }
         f.input :work_plan_details_mock, :label => "Rencana Kerja", :input_html => { :value => f.object.work_plan_details, :disabled => true }
-        f.input :tanggal_proses_mock, :label => "Tanggal Proses", :input_html => { :value => f.object.tanggal_proses.strftime("%d %B %Y"), :disabled => true }
+        #f.input :tanggal_proses_mock, :label => "Tanggal Proses", :input_html => { :value => f.object.tanggal_proses.strftime("%d %B %Y"), :disabled => true }
         f.input :catatan_pengembalian, :label => "Catatan Pengembalian"
         f.input :status, :as => :hidden, :input_html => { :value => "Dikembalikan" } 
         f.buttons do
           f.commit_button :label => "Kembalikan"
         end
-      else
+      else  
         if params[:pkpt]
           f.input :pkpt_id, :as => :hidden, :input_html => { :value => params[:pkpt] }
-          f.input :pkpt_id_mock, :label => "Kode PKPT", :input_html => { :value => params[:pkpt], :disabled => true } 
-        else
-          f.input :pkpt_id, :label => "Kode PKPT"
+          f.input :periode_mock, :label => "Periode", :input_html => { :value => Pkpt.find(params[:pkpt]).periode, :disabled => true } 
+          f.input :entitas_mock,  :label => "Entitas", :input_html => { :value => Pkpt.find(params[:pkpt]).entity.entitas, :disabled => true } 
         end
-        f.input :staff_input_mock, :label => "Staff", :input_html => { :value => current_admin_user.fullname, :disabled => true } 
         f.input :work_plan_category_id, :label => "Kategori Rencana Kerja", :as => :select, :collection => Hash[WorkPlanCategory.all.map{|w| [w.name,w.id]}] 
-        f.input :tanggal_proses, :label => "Tanggal Proses", :as => :datepicker
-        f.input :description, :label => "Deskripsi"    
+        if !f.object.new_record? 
+          f.input :work_plan_id_mock,  :label => "Kode Rencana Kerja", :input_html => { :value => params[:id], :disabled => true } 
+          f.input :status,  :label => "Status", :input_html => { :disabled => true } 
+          f.input :created_at,  :label => "Tanggal Proses", :input_html => { :disabled => true } 
+        end
         f.input :work_plan_details, :label => "Rencana Kerja"
-        f.input :staff_input, :as => :hidden, :input_html => { :value => current_admin_user.fullname } 
+        f.input :created_by, :as => :hidden, :input_html => { :value => current_admin_user.fullname } 
         
         f.buttons
       end
@@ -59,13 +60,13 @@ ActiveAdmin.register WorkPlan do
         work_plan.pkpt.id
       end
       
-      row 'Penanggung Jawab' do
-        work_plan.staff_input
-      end
-      
-      row 'Staff' do
-        work_plan.staff_input
-      end
+      # row 'Penanggung Jawab' do
+      #        work_plan.staff_input
+      #      end
+      #      
+      #      row 'Staff' do
+      #        work_plan.staff_input
+      #      end
       
       row 'Kategori Rencana Kerja' do
         work_plan.work_plan_category.name
@@ -76,7 +77,7 @@ ActiveAdmin.register WorkPlan do
       end
       
       row 'Tanggal Proses' do
-        work_plan.tanggal_proses.strftime("%d %B %Y")
+        work_plan.created_at.strftime("%d %B %Y")
       end
       
       row 'Deskripsi Rencana Kerja' do

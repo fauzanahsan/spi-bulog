@@ -10,6 +10,7 @@ class Ability
     end
     
     if admin_user.has_role? "Korwaswil"
+      can :manage, :all
       can :manage, Pkpt
       can :manage, Lhp
     end
@@ -23,11 +24,14 @@ class Ability
     end
     
     if admin_user.has_role? "Kabidwas"
+      can :manage, :all
       can :manage, Pkpt
     end
     
     if admin_user.has_role? "Staff"
       can :manage, Pkpt
+      can :manage, WorkPlan
+      can :manage, :all
     end
     
     if admin_user.has_role? "Staff Tata Usaha"

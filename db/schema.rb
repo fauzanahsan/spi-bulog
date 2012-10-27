@@ -65,38 +65,39 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
   add_index "admin_users_roles", ["admin_user_id", "role_id"], :name => "index_admin_users_roles_on_admin_user_id_and_role_id"
 
   create_table "entities", :force => true do |t|
-    t.string   "kode",              :default => ""
-    t.string   "entitas",           :default => ""
-    t.string   "kota",              :default => ""
-    t.string   "alamat",            :default => ""
-    t.string   "phone",             :default => ""
-    t.string   "fax",               :default => ""
-    t.string   "status",            :default => ""
-    t.string   "keterangan",        :default => ""
-    t.integer  "kepala_entitas_id"
-    t.string   "kecamatan",         :default => ""
-    t.string   "kabupaten",         :default => ""
-    t.string   "provinsi",          :default => ""
-    t.integer  "wilayah",                           :null => false
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.string   "kode",           :default => ""
+    t.string   "entitas",        :default => ""
+    t.string   "kota",           :default => ""
+    t.string   "alamat",         :default => ""
+    t.string   "phone",          :default => ""
+    t.string   "fax",            :default => ""
+    t.string   "status",         :default => ""
+    t.string   "keterangan",     :default => ""
+    t.string   "kepala_entitas", :default => ""
+    t.string   "kecamatan",      :default => ""
+    t.string   "kabupaten",      :default => ""
+    t.string   "provinsi",       :default => ""
+    t.integer  "wilayah",                        :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
   end
 
   create_table "examinations", :force => true do |t|
     t.integer  "lhp_id"
-    t.string   "uraian",      :default => ""
-    t.string   "rekomendasi", :default => ""
-    t.string   "tanggapan",   :default => ""
-    t.string   "status",      :default => "Diinput"
-    t.string   "created_by",  :default => ""
-    t.string   "updated_by",  :default => ""
-    t.string   "accepted_by", :default => ""
-    t.string   "rejected_by", :default => ""
+    t.string   "uraian",               :default => ""
+    t.string   "rekomendasi",          :default => ""
+    t.string   "tanggapan",            :default => ""
+    t.string   "status",               :default => "Diinput"
+    t.string   "created_by",           :default => ""
+    t.string   "updated_by",           :default => ""
+    t.string   "accepted_by",          :default => ""
+    t.string   "rejected_by",          :default => ""
     t.datetime "accepted_at"
     t.datetime "rejected_at"
     t.integer  "priority"
-    t.datetime "created_at",                         :null => false
-    t.datetime "updated_at",                         :null => false
+    t.text     "catatan_pengembalian"
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
   end
 
   add_index "examinations", ["lhp_id"], :name => "index_examinations_on_lhp_id"
@@ -104,18 +105,19 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
   create_table "lhps", :force => true do |t|
     t.integer  "entity_id"
     t.integer  "work_plan_id"
-    t.string   "keterangan",          :default => ""
-    t.string   "pre_keterangan",      :default => ""
-    t.string   "post_keterangan",     :default => ""
+    t.string   "keterangan",           :default => ""
+    t.string   "pre_keterangan",       :default => ""
+    t.string   "post_keterangan",      :default => ""
     t.datetime "tanggal_awal"
     t.datetime "tanggal_akhir"
-    t.string   "status",              :default => "Diinput"
-    t.string   "updated_by",          :default => ""
-    t.string   "created_by",          :default => ""
-    t.string   "accepted_by",         :default => ""
+    t.string   "status",               :default => "Diinput"
+    t.string   "updated_by",           :default => ""
+    t.string   "created_by",           :default => ""
+    t.string   "accepted_by",          :default => ""
+    t.text     "catatan_pengembalian"
     t.datetime "accepted_at"
-    t.datetime "created_at",                                 :null => false
-    t.datetime "updated_at",                                 :null => false
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
     t.text     "program_pemeriksaan"
     t.text     "maksud_tujuan"
   end
@@ -134,20 +136,21 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
 
   create_table "pkpts", :force => true do |t|
     t.integer  "entity_id"
-    t.string   "keterangan_awal", :default => ""
+    t.string   "keterangan",           :default => ""
     t.string   "periode"
-    t.string   "status",          :default => "Diinput"
-    t.string   "created_by",      :default => ""
-    t.string   "updated_by",      :default => ""
-    t.string   "accepted_by",     :default => ""
-    t.string   "rejected_by",     :default => ""
+    t.string   "status",               :default => "Diinput"
+    t.string   "created_by",           :default => ""
+    t.string   "updated_by",           :default => ""
+    t.string   "accepted_by",          :default => ""
+    t.string   "rejected_by",          :default => ""
     t.datetime "accepted_at"
     t.datetime "rejected_at"
-    t.integer  "tipe",            :default => 0
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.integer  "tipe",                 :default => 0
+    t.text     "catatan_pengembalian"
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
     t.text     "notes"
-    t.string   "wilayah",         :default => ""
+    t.string   "wilayah",              :default => ""
   end
 
   add_index "pkpts", ["entity_id"], :name => "index_pkpts_on_entity_id"
@@ -166,10 +169,10 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
 
   create_table "teams", :force => true do |t|
     t.integer  "work_plan_id"
+    t.integer  "leader_id"
     t.string   "name",         :default => ""
     t.datetime "created_at",                   :null => false
     t.datetime "updated_at",                   :null => false
-    t.integer  "leader_id"
   end
 
   add_index "teams", ["work_plan_id"], :name => "index_teams_on_work_plan_id"

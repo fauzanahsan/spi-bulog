@@ -1,5 +1,5 @@
 class WorkPlan < ActiveRecord::Base
-  attr_accessible :description, :status, :staff_input, :catatan_pengembalian, :work_plan_category_id, 
+  attr_accessible :description, :status, :created_by, :catatan_pengembalian, :work_plan_category_id, 
                   :pkpt_id, :team_id, :tanggal_proses, :work_plan_details
   
   belongs_to :work_plan_category

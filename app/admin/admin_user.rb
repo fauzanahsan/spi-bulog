@@ -15,7 +15,7 @@ ActiveAdmin.register AdminUser do
   form do |f|                         
     f.inputs "User Details" do
       f.input :email       
-      f.input :entity, :label => "Entitas", :as => :select, :collection => Hash[Entity.all.map{|e| [e.kota,e.id]}]                          
+      f.input :entity, :label => "Entitas", :as => :select, :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}]                          
       f.input :fullname, :label => "Nama Lengkap" 
       f.input :phone, :label => "Phone"                  
       f.input :password               

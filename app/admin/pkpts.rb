@@ -10,8 +10,7 @@ ActiveAdmin.register Pkpt do
   
   form do |f| 
     f.inputs do 
-      f.input :wilayah_mock, :label => "Wilayah", :input_html => { :value => current_admin_user.entity.provinsi, :disabled => true } 
-      f.input :entity_mock, :label => "Entitas", :input_html => { :value => current_admin_user.entity.kota, :disabled => true }                           
+      f.input :entity_mock, :label => "Entitas", :input_html => { :value => current_admin_user.entity.entitas, :disabled => true }                           
       f.input :periode, :as => :select, :collection => ['2012','2013','2014']    
       if !f.object.new_record?
         f.input :status, :as => :select, :collection => Pkpt::DOC_STATUS
@@ -20,25 +19,43 @@ ActiveAdmin.register Pkpt do
       f.input :entity_id, :as => :hidden, :input_html => { :value => current_admin_user.entity.id }   
       f.input :wilayah, :as => :hidden, :input_html => { :value => current_admin_user.entity.provinsi }    
       
-      # if !f.object.new_record?
-      #       
-      #         f.has_many :work_plans do |wp|
-      #           app_f.inputs "Rencana Kerja" do
-      #             if !app_f.object.nil?
-      #               # show the destroy checkbox only if it is an existing appointment
-      #               # else, there's already dynamic JS to add / remove new appointments
-      #               app_f.input :_destroy, :as => :boolean, :label => "Destroy?"
-      #             end
-      # 
-      #             app_f.input :description # it should automatically generate a drop-down select to choose from your existing patients
-      #             app_f.input :staff_input
-      #           end
-      #         end
-      #       
-      #       end
+
       
       
     end
+    # if !f.object.new_record?
+    #       
+    #     #       
+    #     #         f.has_many :work_plans do |wp|
+    #     #           app_f.inputs "Rencana Kerja" do
+    #     #             if !app_f.object.nil?
+    #     #               # show the destroy checkbox only if it is an existing appointment
+    #     #               # else, there's already dynamic JS to add / remove new appointments
+    #     #               app_f.input :_destroy, :as => :boolean, :label => "Destroy?"
+    #     #             end
+    #     # 
+    #     #             app_f.input :description # it should automatically generate a drop-down select to choose from your existing patients
+    #     #             app_f.input :staff_input
+    #     #           end
+    #     #         end
+    #     #
+    #        table_for f.object.work_plans do
+    #          column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
+    #          column("Deskripsi", :description)
+    #          column("Staff Input", :staff_input)
+    #          column("Kategori") { |wp| wp.work_plan_category.name }
+    #          column("Status", :status)
+    #          column("Tanggal") { |wp| wp.tanggal_proses.strftime("%d %B %Y") }
+    #          column("Proses") { |wp| #if !wp.returned? 
+    #                                    #link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put) 
+    #                                    link_to("Ubah", edit_admin_work_plan_path(wp.id))  + " " +
+    #                                    link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) + " " +
+    #                                    link_to("Tambah Tim", new_admin_team_path(:work_plan_id => wp.id), :method => :get)
+    #                                  #end
+    #          }  
+    #        end
+    #            
+    #     end
     f.buttons                         
   end
   
@@ -58,21 +75,35 @@ ActiveAdmin.register Pkpt do
       row 'Kode PKPT' do
         pkpt.id
       end
-      
-      row 'Wilayah' do
-        pkpt.wilayah
-      end
-      
-      row 'Entitas' do
-        pkpt.entity.kota
-      end
-      
+       
       row 'Periode' do
         pkpt.periode
       end
       
+      row 'Entitas' do
+        pkpt.entity.entitas
+      end
+      
       row 'Catatan' do
+        # form do |f| 
+        #    f.inputs do
+        #      f.input :catatan
+        #    end
+        #    f.buttons
+        #  end
         raw pkpt.notes.gsub(/\n/, '<br/>')
+      end
+      
+      row 'Status Dokumen' do
+        pkpt.status
+      end
+      
+      row 'Tanggal' do
+        pkpt.updated_at.strftime("%H:%M %d %B %Y")
+      end
+      
+      row 'Catatan Pengembalian' do
+        pkpt.catatan_pengembalian
       end
       
       row 'Rencana Kerja' do
@@ -80,13 +111,13 @@ ActiveAdmin.register Pkpt do
         table_for pkpt.work_plans do
           column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
           column("Deskripsi", :description)
-          column("Staff Input", :staff_input)
+          column("Staff Input", :created_by)
           column("Kategori") { |wp| wp.work_plan_category.name }
           column("Status", :status)
-          column("Tanggal") { |wp| wp.tanggal_proses.strftime("%d %B %Y") }
+          column("Tanggal") { |wp| wp.created_at.strftime("%d %B %Y") }
           column("Proses") { |wp| #if !wp.returned? 
                                     #link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put) 
-                                    link_to("Ubah", edit_admin_work_plan_path(wp.id))  + " " +
+                                    link_to("Ubah", edit_admin_work_plan_path(wp.id, :pkpt => pkpt.id))  + " " +
                                     link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) + " " +
                                     link_to("Tambah Tim", new_admin_team_path(:work_plan_id => wp.id), :method => :get)
                                   #end
@@ -96,9 +127,10 @@ ActiveAdmin.register Pkpt do
       end
       
       row ' ' do
-        link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") + "   " + 
-        link_to("Setujui PKPT", approve_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") + "   " + 
-        link_to("Kirim PKPT", kirim_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button")
+        
+        link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") if current_admin_user.has_role? "Staff"
+        #link_to("Setujui PKPT", approve_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") if current_admin_user.has_role? "Kepala SPI"
+        #link_to("Kirim PKPT", kirim_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") if current_admin_user.entity.pkpt_aktif && current_admin_user.entity.pkpt_aktif.id == pkpt.id 
       end
       
     end
