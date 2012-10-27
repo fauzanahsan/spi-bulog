@@ -1,4 +1,5 @@
 ActiveAdmin.register Team do
+  menu :if => proc{ can?(:manage, Team) }
   controller.authorize_resource
   
   form do |f|

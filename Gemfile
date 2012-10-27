@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.3'
+gem 'rails', '3.2.6'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -8,8 +8,23 @@ gem 'rails', '3.2.3'
 gem 'mysql2', :group => :development
 
 gem 'rails_autolink'
-
+gem "activeadmin", :git => "git://github.com/gregbell/active_admin.git"
 gem "heroku"
+
+gem 'jquery-rails'
+
+gem 'formtastic', '~> 2.1.1'
+gem 'rails-no-cache'
+
+# Authentication
+gem "devise", ">= 2.1.0"
+gem "devise_security_extension"
+gem 'rails_email_validator'
+gem "cancan", ">= 1.6.7"
+gem "cancan_namespace"
+gem "rolify", ">= 3.1.0"
+
+gem 'thin'
 
 group :production do
   gem 'pg'
@@ -28,21 +43,6 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
-gem 'jquery-rails'
-gem "activeadmin", :git => "git://github.com/gregbell/active_admin.git"
-
-gem 'formtastic', '~> 2.1.1'
-gem 'rails-no-cache'
-
-# Authentication
-gem "devise", ">= 2.1.0"
-gem "devise_security_extension"
-gem 'rails_email_validator'
-gem "cancan", ">= 1.6.7"
-gem "cancan_namespace"
-gem "rolify", ">= 3.1.0"
-
-gem 'thin'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

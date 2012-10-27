@@ -1,5 +1,5 @@
 ActiveAdmin.register Examination do
-  menu :label => "Hasil Pemeriksaan"
+  menu :label => "Hasil Pemeriksaan", :if => proc{ can?(:manage, Examination) }
   controller.authorize_resource
   
   index do

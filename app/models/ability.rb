@@ -31,7 +31,6 @@ class Ability
     if admin_user.has_role? "Staff"
       can :manage, Pkpt
       can :manage, WorkPlan
-      can :manage, :all
     end
     
     if admin_user.has_role? "Staff Tata Usaha"

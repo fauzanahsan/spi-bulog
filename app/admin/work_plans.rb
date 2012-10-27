@@ -1,5 +1,6 @@
 ActiveAdmin.register WorkPlan do
-  menu :parent => "Rencana Kerja", :label => "List Rencana Kerja"
+  menu false
+  menu :parent => "Rencana Kerja", :label => "List Rencana Kerja", :if => proc{ can?(:manage, WorkPlan) }
   controller.authorize_resource
   
   index do
@@ -59,14 +60,6 @@ ActiveAdmin.register WorkPlan do
       row 'Kode PKPT' do
         work_plan.pkpt.id
       end
-      
-      # row 'Penanggung Jawab' do
-      #        work_plan.staff_input
-      #      end
-      #      
-      #      row 'Staff' do
-      #        work_plan.staff_input
-      #      end
       
       row 'Kategori Rencana Kerja' do
         work_plan.work_plan_category.name

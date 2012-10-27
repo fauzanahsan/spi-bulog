@@ -1,5 +1,5 @@
 ActiveAdmin.register Lhp do
-  menu :label => "LHP"
+  menu :label => "LHP", :if => proc{ can?(:manage, Lhp) }
   controller.authorize_resource
   
   index do

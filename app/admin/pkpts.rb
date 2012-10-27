@@ -1,5 +1,5 @@
 ActiveAdmin.register Pkpt do
-  menu :label => "PKPT"
+  menu :label => "PKPT", :if => proc{ can?(:manage, Pkpt) }
   controller.authorize_resource
   
   filter :id, :label => "Kode PKPT"
@@ -18,26 +18,10 @@ ActiveAdmin.register Pkpt do
       f.input :notes, :label => "Catatan" #, :input_html => { :disabled=>true }
       f.input :entity_id, :as => :hidden, :input_html => { :value => current_admin_user.entity.id }   
       f.input :wilayah, :as => :hidden, :input_html => { :value => current_admin_user.entity.provinsi }    
-      
-
-      
-      
+            
     end
     # if !f.object.new_record?
     #       
-    #     #       
-    #     #         f.has_many :work_plans do |wp|
-    #     #           app_f.inputs "Rencana Kerja" do
-    #     #             if !app_f.object.nil?
-    #     #               # show the destroy checkbox only if it is an existing appointment
-    #     #               # else, there's already dynamic JS to add / remove new appointments
-    #     #               app_f.input :_destroy, :as => :boolean, :label => "Destroy?"
-    #     #             end
-    #     # 
-    #     #             app_f.input :description # it should automatically generate a drop-down select to choose from your existing patients
-    #     #             app_f.input :staff_input
-    #     #           end
-    #     #         end
     #     #
     #        table_for f.object.work_plans do
     #          column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
@@ -85,12 +69,6 @@ ActiveAdmin.register Pkpt do
       end
       
       row 'Catatan' do
-        # form do |f| 
-        #    f.inputs do
-        #      f.input :catatan
-        #    end
-        #    f.buttons
-        #  end
         raw pkpt.notes.gsub(/\n/, '<br/>')
       end
       
@@ -115,22 +93,40 @@ ActiveAdmin.register Pkpt do
           column("Kategori") { |wp| wp.work_plan_category.name }
           column("Status", :status)
           column("Tanggal") { |wp| wp.created_at.strftime("%d %B %Y") }
-          column("Proses") { |wp| #if !wp.returned? 
-                                    #link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put) 
-                                    link_to("Ubah", edit_admin_work_plan_path(wp.id, :pkpt => pkpt.id))  + " " +
-                                    link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) + " " +
-                                    link_to("Tambah Tim", new_admin_team_path(:work_plan_id => wp.id), :method => :get)
-                                  #end
-          }  
+          
+          if current_admin_user.has_role? "Korwaswil" && current_admin_user.own_pkpt.id == pkpt.id
+            column("Proses") { |wp| 
+                                      #link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put)                                     
+                                      link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) 
+                                      #link_to("Tambah Tim", new_admin_team_path(:work_plan_id => wp.id), :method => :get)
+                              }  
+          end
+          
+          if current_admin_user.has_role? "Staff"
+            column("Proses") { |wp| link_to("Ubah", edit_admin_work_plan_path(wp.id, :pkpt => pkpt.id))   }
+          end
+          
         end
       
       end
       
-      row ' ' do
-        
-        link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") if current_admin_user.has_role? "Staff"
-        #link_to("Setujui PKPT", approve_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") if current_admin_user.has_role? "Kepala SPI"
-        #link_to("Kirim PKPT", kirim_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") if current_admin_user.entity.pkpt_aktif && current_admin_user.entity.pkpt_aktif.id == pkpt.id 
+      if current_admin_user.has_role? "Staff"
+        row ' ' do
+          link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") + " " +
+          link_to("Kirim Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button")
+        end
+      end
+      
+      if current_admin_user.has_role? "Kepala SPI"
+        row ' ' do
+          link_to("Setujui PKPT", approve_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button")
+        end
+      end
+      
+      if current_admin_user.has_role? "Korwaswil" && current_admin_user.entity.pkpt_aktif && current_admin_user.entity.pkpt_aktif.id == pkpt.id
+        row ' ' do
+          link_to("Kirim PKPT", kirim_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") 
+        end
       end
       
     end

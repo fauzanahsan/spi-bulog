@@ -20,7 +20,7 @@ ActiveAdmin.register AdminUser do
       f.input :phone, :label => "Phone"                  
       f.input :password               
       f.input :password_confirmation
-      f.input :roles, :as => :radio, :collection => Role.all  
+      f.input :roles, :as => :select, :collection => Role.all  
     end                               
     f.buttons                         
   end                                 

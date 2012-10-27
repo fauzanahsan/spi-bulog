@@ -148,15 +148,29 @@ ActiveAdmin.setup do |config|
   # config.csv_column_separator = ','
 end
 
+# ActiveAdmin::ResourceController.class_eval do
+#   protected
+# 
+#   def current_ability
+#     @current_ability ||= Ability.new(current_admin_user)
+#   end
+#   
+# 
+#   
+# end
+
 ActiveAdmin::ResourceController.class_eval do
+
   protected
 
-  def current_ability
-    @current_ability ||= Ability.new(current_admin_user)
-  end
-  
   rescue_from CanCan::AccessDenied do |exception|
-      redirect_to admin_dashboard_path, :alert => exception.message
+    redirect_to admin_dashboard_path, :alert => exception.message
   end
   
+end
+
+module ActiveAdmin
+  class BaseController
+    with_role :admin
+  end
 end

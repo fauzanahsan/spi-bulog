@@ -1,5 +1,5 @@
 ActiveAdmin.register Entity do
-  menu :label => "Entitas"
+  menu :label => "Entitas", :if => proc{ can?(:manage, Entity) }
   controller.authorize_resource
   
   form do |f|
