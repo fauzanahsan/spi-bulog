@@ -2,6 +2,7 @@ class CreateTeams < ActiveRecord::Migration
   def up
     create_table :teams do |t|
       t.references :work_plan
+      t.integer :leader_id
       t.string :name, :default => ""
       t.timestamps
     end

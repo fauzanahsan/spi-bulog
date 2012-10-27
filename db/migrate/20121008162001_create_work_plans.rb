@@ -6,8 +6,13 @@ class CreateWorkPlans < ActiveRecord::Migration
       t.references :team
       t.text :description, :default => ""
       t.text :catatan_pengembalian, :default => ""
-      t.datetime :tanggal_proses
       t.string :status, :default => "Diinput"
+      t.string :created_by, :default => ""
+      t.string :updated_by, :default => ""
+      t.string :accepted_by, :default => ""
+      t.string :rejected_by, :default => ""
+      t.datetime :accepted_at
+      t.datetime :rejected_at
       
       t.timestamps
     end

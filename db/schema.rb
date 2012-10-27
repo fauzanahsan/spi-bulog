@@ -39,6 +39,8 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
     t.integer  "entity_id"
     t.string   "email",                  :default => "", :null => false
     t.string   "encrypted_password",     :default => "", :null => false
+    t.string   "fullname",               :default => "", :null => false
+    t.string   "phone",                  :default => ""
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
@@ -49,8 +51,6 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
-    t.string   "phone",                  :default => ""
-    t.string   "fullname",               :default => ""
   end
 
   add_index "admin_users", ["email"], :name => "index_admin_users_on_email", :unique => true
@@ -65,18 +65,21 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
   add_index "admin_users_roles", ["admin_user_id", "role_id"], :name => "index_admin_users_roles_on_admin_user_id_and_role_id"
 
   create_table "entities", :force => true do |t|
-    t.string   "kota",       :default => ""
-    t.string   "alamat",     :default => ""
-    t.string   "phone",      :default => ""
-    t.string   "fax",        :default => ""
-    t.string   "status",     :default => ""
-    t.string   "keterangan", :default => ""
-    t.string   "direktur",   :default => ""
-    t.string   "kecamatan",  :default => ""
-    t.string   "kabupaten",  :default => ""
-    t.string   "provinsi",   :default => ""
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.string   "kode",              :default => ""
+    t.string   "entitas",           :default => ""
+    t.string   "kota",              :default => ""
+    t.string   "alamat",            :default => ""
+    t.string   "phone",             :default => ""
+    t.string   "fax",               :default => ""
+    t.string   "status",            :default => ""
+    t.string   "keterangan",        :default => ""
+    t.integer  "kepala_entitas_id"
+    t.string   "kecamatan",         :default => ""
+    t.string   "kabupaten",         :default => ""
+    t.string   "provinsi",          :default => ""
+    t.integer  "wilayah",                           :null => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
   end
 
   create_table "examinations", :force => true do |t|
@@ -85,6 +88,13 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
     t.string   "rekomendasi", :default => ""
     t.string   "tanggapan",   :default => ""
     t.string   "status",      :default => "Diinput"
+    t.string   "created_by",  :default => ""
+    t.string   "updated_by",  :default => ""
+    t.string   "accepted_by", :default => ""
+    t.string   "rejected_by", :default => ""
+    t.datetime "accepted_at"
+    t.datetime "rejected_at"
+    t.integer  "priority"
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
   end
@@ -100,6 +110,10 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
     t.datetime "tanggal_awal"
     t.datetime "tanggal_akhir"
     t.string   "status",              :default => "Diinput"
+    t.string   "updated_by",          :default => ""
+    t.string   "created_by",          :default => ""
+    t.string   "accepted_by",         :default => ""
+    t.datetime "accepted_at"
     t.datetime "created_at",                                 :null => false
     t.datetime "updated_at",                                 :null => false
     t.text     "program_pemeriksaan"
@@ -123,6 +137,13 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
     t.string   "keterangan_awal", :default => ""
     t.string   "periode"
     t.string   "status",          :default => "Diinput"
+    t.string   "created_by",      :default => ""
+    t.string   "updated_by",      :default => ""
+    t.string   "accepted_by",     :default => ""
+    t.string   "rejected_by",     :default => ""
+    t.datetime "accepted_at"
+    t.datetime "rejected_at"
+    t.integer  "tipe",            :default => 0
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
     t.text     "notes"
@@ -135,9 +156,9 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
     t.string   "name"
     t.integer  "resource_id"
     t.string   "resource_type"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
-    t.string   "keterangan",    :default => ""
+    t.string   "keterangan"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   add_index "roles", ["name", "resource_type", "resource_id"], :name => "index_roles_on_name_and_resource_type_and_resource_id"
@@ -163,16 +184,21 @@ ActiveRecord::Schema.define(:version => 20121017155615) do
   create_table "work_plans", :force => true do |t|
     t.integer  "work_plan_category_id"
     t.integer  "pkpt_id"
+    t.integer  "team_id"
     t.text     "catatan_pengembalian"
-    t.datetime "tanggal_proses"
     t.string   "status",                :default => "Diinput"
+    t.string   "created_by",            :default => ""
+    t.string   "updated_by",            :default => ""
+    t.string   "accepted_by",           :default => ""
+    t.string   "rejected_by",           :default => ""
+    t.datetime "accepted_at"
+    t.datetime "rejected_at"
     t.datetime "created_at",                                   :null => false
     t.datetime "updated_at",                                   :null => false
-    t.string   "staff_input",           :default => ""
     t.string   "description",           :default => ""
     t.text     "work_plan_details"
   end
 
-  add_index "work_plans", ["work_plan_category_id", "pkpt_id"], :name => "work_plan_cat_lhp_team"
+  add_index "work_plans", ["work_plan_category_id", "pkpt_id", "team_id"], :name => "work_plan_cat_lhp_team"
 
 end

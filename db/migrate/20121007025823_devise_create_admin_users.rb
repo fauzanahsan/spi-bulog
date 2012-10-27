@@ -11,6 +11,9 @@ class DeviseCreateAdminUsers < ActiveRecord::Migration
       ## Database authenticatable
       t.string :email,              :null => false, :default => ""
       t.string :encrypted_password, :null => false, :default => ""
+      
+      t.string :fullname,           :null => false, :default => ""
+      t.string :phone,              :default => ""
 
       ## Recoverable
       t.string   :reset_password_token
