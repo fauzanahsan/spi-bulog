@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121028025427) do
+ActiveRecord::Schema.define(:version => 20121028041443) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -105,7 +105,6 @@ ActiveRecord::Schema.define(:version => 20121028025427) do
   create_table "lhps", :force => true do |t|
     t.integer  "entity_id"
     t.integer  "work_plan_id"
-    t.string   "keterangan",           :default => ""
     t.string   "pre_keterangan",       :default => ""
     t.string   "post_keterangan",      :default => ""
     t.datetime "tanggal_awal"
@@ -120,6 +119,7 @@ ActiveRecord::Schema.define(:version => 20121028025427) do
     t.datetime "updated_at",                                  :null => false
     t.text     "program_pemeriksaan"
     t.text     "maksud_tujuan"
+    t.text     "keterangan"
   end
 
   add_index "lhps", ["entity_id", "work_plan_id"], :name => "lhp_entity_work_plan"

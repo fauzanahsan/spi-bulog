@@ -1,4 +1,5 @@
 ActiveAdmin.register Examination do
+  menu false
   menu :label => "Hasil Pemeriksaan", :if => proc{ can?(:manage, Examination) }
   controller.authorize_resource
   

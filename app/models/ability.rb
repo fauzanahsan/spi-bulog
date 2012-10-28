@@ -13,6 +13,7 @@ class Ability
       #can :manage, :all
       can :manage, Pkpt
       can :manage, Lhp
+      can :manage, WorkPlan
     end
     
     if admin_user.has_role? "Direksi"
@@ -38,7 +39,7 @@ class Ability
     end
     
     if admin_user.has_role? "Ketua Tim"
-      can :manage, Pkpt
+      can :manage, Lhp
     end
     
     if admin_user.has_role? "Anggota Tim"

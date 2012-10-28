@@ -20,7 +20,6 @@ ActiveAdmin.register WorkPlan do
       if params[:dikembalikan]
         f.input :work_plan_id_mock, :label => "Kode Rencana Kerja", :input_html => { :value => f.object.id, :disabled => true }
         f.input :pkpt_id_mock, :label => "Kode PKPT", :input_html => { :value => f.object.pkpt.id, :disabled => true }
-        #f.input :penanggung_jawab_mock, :label => "Penanggung Jawab", :input_html => { :value => f.object.staff_input, :disabled => true }
         f.input :input_staff_mock, :label => "Staff", :input_html => { :value => f.object.staff_input, :disabled => true }
         f.input :work_plan_category_mock, :label => "Kategori Rencana Kerja", :input_html => { :value => f.object.work_plan_category.name, :disabled => true }
         f.input :work_plan_details_mock, :label => "Rencana Kerja", :input_html => { :value => f.object.work_plan_details, :disabled => true }
@@ -54,6 +53,14 @@ ActiveAdmin.register WorkPlan do
   
   show do |work_plan|
     attributes_table do
+      row 'Periode' do
+        work_plan.pkpt.periode
+      end
+      
+      row 'Entitas' do
+        work_plan.pkpt.entity.entitas
+      end
+      
       row 'Kode Rencana Kerja' do
         work_plan.id
       end
@@ -73,10 +80,6 @@ ActiveAdmin.register WorkPlan do
       row 'Tanggal Proses' do
         work_plan.created_at.strftime("%d %B %Y")
       end
-      
-      # row 'Deskripsi Rencana Kerja' do
-      #    work_plan.description
-      # end
       
       row 'Rencana Kerja' do
         raw work_plan.work_plan_details.gsub(/\n/, '<br/>')

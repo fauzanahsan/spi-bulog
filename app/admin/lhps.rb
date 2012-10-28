@@ -1,15 +1,31 @@
 ActiveAdmin.register Lhp do
+  config.clear_sidebar_sections!
   menu :label => "LHP", :if => proc{ can?(:manage, Lhp) }
   controller.authorize_resource
   
   index do
-    column("Kode LHP", :id)
-    column("Kode PKPT"){ |lhp| lhp.work_plan.pkpt.id }
-    column("Kode Rencana Kerja", :work_plan_id)
-    column("Status", :status)
-    column("Tanggal Awal"){ |lhp| lhp.tanggal_awal.strftime("%d %B %Y") } 
-    column("Tanggal Akhir"){ |lhp| lhp.tanggal_akhir.strftime("%d %B %Y") } 
-    default_actions
+    if current_admin_user.has_role?("Ketua Tim") || current_admin_user.has_role?("Anggota Tim")
+      column("ID LHP"){ |lhp| 
+        if lhp.status == "Ditolak" || lhp.status == "Diinput"
+          link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id, :work_plan_id => lhp.work_plan.id))
+        elsif lhp.status == "Disetujui"
+          link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id))
+        elsif lhp.status == "Dikirim"
+          link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id))
+        end
+      }
+      column("Keterangan", :keterangan)
+      column("Jumlah Temuan"){ |lhp| lhp.examinations.count }
+      column("Status", :status)
+    else
+      column("Kode LHP", :id)
+      column("Kode PKPT"){ |lhp| lhp.work_plan.pkpt.id }
+      column("Kode Rencana Kerja", :work_plan_id)
+      column("Status", :status)
+      column("Tanggal Awal"){ |lhp| lhp.tanggal_awal.strftime("%d %B %Y") } 
+      column("Tanggal Akhir"){ |lhp| lhp.tanggal_akhir.strftime("%d %B %Y") } 
+      default_actions
+    end
   end
   
   form do |f|
@@ -20,6 +36,7 @@ ActiveAdmin.register Lhp do
         f.input :work_plan_id_mock, :label => "Kode Rencana Kerja", :input_html => { :value => work_plan.id, :disabled => true }
         f.input :work_plan_detail_mock, :label => "Rencana Kerja", :input_html => { :value => work_plan.work_plan_details, :disabled => true }
         f.input :entity, :label => "Orbrik", :as => :select, :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}] 
+        f.input :keterangan
         f.input :tanggal_awal, :label => "Waktu Pemeriksaan", :as => :datepicker
         f.input :tanggal_akhir, :label => "Sampai Dengan", :as => :datepicker
         f.input :work_plan_id, :as => :hidden, :input_html => { :value => params[:work_plan_id] } 
