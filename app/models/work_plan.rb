@@ -6,7 +6,6 @@ class WorkPlan < ActiveRecord::Base
   belongs_to :pkpt
     
   has_many :lhps
-  has_one :team
   
   def returned?
     self.status == "Dikembalikan"

@@ -55,76 +55,105 @@ ActiveAdmin.register Pkpt do
   
   show do |pkpt|
     attributes_table do
-      row 'Kode PKPT' do
-        pkpt.id
-      end
-       
-      row 'Periode' do
-        pkpt.periode
-      end
-      
-      row 'Entitas' do
-        pkpt.entity.entitas
-      end
-      
-      row 'Catatan' do
-        raw pkpt.notes.gsub(/\n/, '<br/>')
-      end
-      
-      row 'Status Dokumen' do
-        pkpt.status
-      end
-      
-      row 'Tanggal' do
-        pkpt.updated_at.strftime("%H:%M %d %B %Y")
-      end
-      
-      row 'Catatan Pengembalian' do
-        pkpt.catatan_pengembalian
-      end
-      
-      row 'Rencana Kerja' do
-      
-        table_for pkpt.work_plans.where(:created_by_id => current_admin_user.id) do
-          column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
-          column("Deskripsi", :work_plan_details)
-          column("Kategori") { |wp| wp.work_plan_category.name }
-          column("Status", :status)
-          column("Tanggal") { |wp| wp.created_at.strftime("%d %B %Y") }
-          
-          if current_admin_user.has_role? "Korwaswil" && current_admin_user.own_pkpt.id == pkpt.id
-            column("Proses") { |wp| 
-                                      #link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put)                                     
-                                      link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) 
-                                      #link_to("Tambah Tim", new_admin_team_path(:work_plan_id => wp.id), :method => :get)
-                              }  
+      if pkpt.status == 'Disetujui'
+        row 'Periode' do
+          pkpt.periode
+        end
+        row 'Entitas' do
+          pkpt.entity.entitas
+        end
+        row 'Program Kerja' do
+          table_for pkpt.work_plans do
+            column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
+            column("Keterangan", :work_plan_details)
+            column("Jumlah LHP") { |wp| wp.lhps.count }
+            
+            if current_admin_user.own_pkpt.id == pkpt.id && current_admin_user.has_role?("Korwaswil") 
+              column("Proses") { |wp| link_to("Buat LHP", new_admin_lhp_path(:work_plan_id => wp.id))  }  
+            end
+            
           end
-          
+    
+        end
+      else
+        row 'Kode PKPT' do
+          pkpt.id
+        end
+     
+        row 'Periode' do
+          pkpt.periode
+        end
+    
+        row 'Entitas' do
+          pkpt.entity.entitas
+        end
+    
+        row 'Catatan' do
+          raw pkpt.notes.gsub(/\n/, '<br/>')
+        end
+    
+        row 'Status Dokumen' do
+          pkpt.status
+        end
+    
+        row 'Tanggal' do
+          pkpt.updated_at.strftime("%H:%M %d %B %Y")
+        end
+    
+        row 'Catatan Pengembalian' do
+          pkpt.catatan_pengembalian
+        end
+    
+        row 'Rencana Kerja' do
+    
           if current_admin_user.has_role? "Staff"
-            column("Proses") { |wp| link_to("Ubah", edit_admin_work_plan_path(wp.id, :pkpt => pkpt.id))   }
+            @work_plans = pkpt.work_plans.where(:created_by_id => current_admin_user.id)
+          else
+            @work_plans = pkpt.work_plans
           end
-          
+          #table_for pkpt.work_plans.where(:created_by_id => current_admin_user.id) do
+          table_for @work_plans do
+            column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
+            column("Deskripsi", :work_plan_details)
+            column("Kategori") { |wp| wp.work_plan_category.name }
+            column("Status", :status)
+            column("Tanggal") { |wp| wp.created_at.strftime("%d %B %Y") }
+        
+            if current_admin_user.has_role? "Korwaswil" && current_admin_user.own_pkpt.id == pkpt.id
+              column("Proses") { |wp| 
+                                        #link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put)                                     
+                                        link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) 
+                                        #link_to("Tambah Tim", new_admin_team_path(:work_plan_id => wp.id), :method => :get)
+                                }  
+            end
+        
+            if current_admin_user.has_role? "Staff"
+              column("Proses") { |wp| link_to("Ubah", edit_admin_work_plan_path(wp.id, :pkpt => pkpt.id))   }
+            end
+        
+          end
+    
         end
-      
-      end
-      
-      if current_admin_user.has_role? "Staff"
-        row ' ' do
-          link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") + " " +
-          link_to("Kirim Rencana Kerja", wp_kirim_admin_pkpt_path(:pkpt => pkpt.id), :method => :put, :class => "button")
+    
+        if current_admin_user.has_role? "Staff"
+          row ' ' do
+            link_to("Tambah Rencana Kerja", new_admin_work_plan_path(:pkpt => pkpt.id), :method => :get, :class => "button") + " " +
+            link_to("Kirim Rencana Kerja", wp_kirim_admin_pkpt_path(:pkpt => pkpt.id), :method => :put, :class => "button")
+          end
         end
-      end
-      
-      if current_admin_user.has_role? "Kepala SPI"
-        row ' ' do
-          link_to("Setujui PKPT", approve_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button")
+    
+        if current_admin_user.has_role? "Kepala SPI"
+          row ' ' do
+            link_to("Setujui PKPT", approve_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button")
+          end
         end
-      end
-      
-      if current_admin_user.has_role? "Korwaswil" && current_admin_user.entity.pkpt_aktif && current_admin_user.entity.pkpt_aktif.id == pkpt.id
-        row ' ' do
-          link_to("Kirim PKPT", kirim_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") 
+    
+        if current_admin_user.has_role? "Korwaswil" && current_admin_user.entity.pkpt_aktif && current_admin_user.entity.pkpt_aktif.id == pkpt.id
+          row ' ' do
+            link_to("Kirim PKPT", kirim_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") 
+          end
         end
+        
       end
       
     end
@@ -158,6 +187,11 @@ ActiveAdmin.register Pkpt do
     end
     flash[:notice] = "Success Sent"
     redirect_to admin_pkpt_path(params[:pkpt])
+  end
+  
+  member_action :lhp_overview, :method => :get do
+    @pkpt = Pkpt.find(params[:id])
+    render :partial => "proses_lhp", :locals => {:pkpt => @pkpt }
   end
   
 end

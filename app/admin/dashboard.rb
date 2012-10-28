@@ -23,7 +23,7 @@ ActiveAdmin.register_page "Dashboard" do
                       if ent.pkpt_aktif.blank? 
                         link_to("Baru", new_admin_pkpt_path)
                       elsif ent.pkpt_aktif.status == "Disetujui"
-                        link_to("Disetujui", admin_pkpt_path(ent.pkpt_aktif.id))
+                        link_to("Proses LHP", admin_pkpt_path(ent.pkpt_aktif.id))
                       else
                         link_to("Edit", admin_pkpt_path(ent.pkpt_aktif.id))
                       end

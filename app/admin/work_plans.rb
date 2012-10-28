@@ -74,9 +74,9 @@ ActiveAdmin.register WorkPlan do
         work_plan.created_at.strftime("%d %B %Y")
       end
       
-      row 'Deskripsi Rencana Kerja' do
-         work_plan.description
-      end
+      # row 'Deskripsi Rencana Kerja' do
+      #    work_plan.description
+      # end
       
       row 'Rencana Kerja' do
         raw work_plan.work_plan_details.gsub(/\n/, '<br/>')

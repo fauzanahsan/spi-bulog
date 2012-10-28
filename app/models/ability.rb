@@ -10,7 +10,7 @@ class Ability
     end
     
     if admin_user.has_role? "Korwaswil"
-      can :manage, :all
+      #can :manage, :all
       can :manage, Pkpt
       can :manage, Lhp
     end

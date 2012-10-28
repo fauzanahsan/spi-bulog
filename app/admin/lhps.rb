@@ -7,41 +7,28 @@ ActiveAdmin.register Lhp do
     column("Kode PKPT"){ |lhp| lhp.work_plan.pkpt.id }
     column("Kode Rencana Kerja", :work_plan_id)
     column("Status", :status)
-    column("Tanggal Awal"){ |wp| wp.tanggal_awal.strftime("%d %B %Y") } 
-    column("Tanggal Akhir"){ |wp| wp.tanggal_akhir.strftime("%d %B %Y") } 
+    column("Tanggal Awal"){ |lhp| lhp.tanggal_awal.strftime("%d %B %Y") } 
+    column("Tanggal Akhir"){ |lhp| lhp.tanggal_akhir.strftime("%d %B %Y") } 
     default_actions
   end
   
   form do |f|
     if params[:work_plan_id] 
       work_plan = WorkPlan.find(params[:work_plan_id])
-      f.inputs do  
+      f.inputs do
+        f.input :periode_mock, :label => "Periode/Tahun", :input_html => { :value => work_plan.pkpt.periode, :disabled => true }  
         f.input :work_plan_id_mock, :label => "Kode Rencana Kerja", :input_html => { :value => work_plan.id, :disabled => true }
-        f.input :pkpt_id_mock, :label => "Kode PKPT", :input_html => { :value => work_plan.pkpt.id, :disabled => true }
-        f.input :periode_mock, :label => "Periode/Tahun", :input_html => { :value => work_plan.pkpt.periode, :disabled => true }
+        f.input :work_plan_detail_mock, :label => "Rencana Kerja", :input_html => { :value => work_plan.work_plan_details, :disabled => true }
+        f.input :entity, :label => "Orbrik", :as => :select, :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}] 
         f.input :tanggal_awal, :label => "Waktu Pemeriksaan", :as => :datepicker
         f.input :tanggal_akhir, :label => "Sampai Dengan", :as => :datepicker
-      end  
-      
-      if work_plan.team
-        leader = AdminUser.find(work_plan.team.leader_id) 
-        f.inputs "Tim Pengawas" do       
-          f.input :leader_id_mock, :label => "Ketua Tim", :input_html => { :value => leader.fullname, :disabled => true }
-          # work_plan.team.admin_users.each do |member|
-          #             f.input :admin_users_mock, :label => "Anggota", :input_html => { :value => member.fullname, :disabled => true }
-          #           end
-          # table_for work_plan.team.admin_users do
-          #             f.input("Anggota") { |member| member.fullname}
-          #           end
-        end
+        f.input :work_plan_id, :as => :hidden, :input_html => { :value => params[:work_plan_id] } 
       end
-      
-      f.inputs do    
-        f.input :maksud_tujuan, :label => "Maksud dan Tujuan"
-        f.input :program_pemeriksaan, :label => "Program Pemeriksaan"   
-        f.input :work_plan_id, :as => :hidden, :input_html => { :value => work_plan.id } 
-        f.input :entity_id, :as => :hidden, :input_html => { :value => work_plan.pkpt.entity.id }   
-      end                                                     
+      f.inputs "Tim Pengawas", :for => [:team, f.object.team || Team.new] do |team_form|
+        team_form.input :leader_id, :label => "Ketua Tim", :as => :select, :collection => Hash[AdminUser.with_role("Ketua Tim").all.map{|e| [e.email,e.id]}]
+        team_form.input :admin_users, :label => "Anggota", :as => :check_boxes, :collection => Hash[AdminUser.with_role("Anggota Tim").all.map{|e| [e.email,e.id]}]
+      end
+                                                      
       f.buttons 
     end                      
   end
@@ -66,9 +53,9 @@ ActiveAdmin.register Lhp do
       end
       
 
-      if lhp.work_plan.team
+      if lhp.team
         row 'Ketua Tim' do
-          AdminUser.find(lhp.work_plan.team.leader_id).fullname
+          AdminUser.find(lhp.team.leader_id).fullname
           # table_for pkpt.work_plans do
           #    column("Anggota") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
           #  end
