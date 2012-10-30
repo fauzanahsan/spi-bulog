@@ -20,11 +20,26 @@ ActiveAdmin.register Examination do
       elsif f.object.new_record?
         f.input :lhp
       end
-      f.input :uraian #, :label => "Staff", :input_html => { :value => current_admin_user.fullname, :disabled => true } 
-      f.input :rekomendasi #, :label => "Kategori Rencana Kerja", :as => :select, :collection => Hash[WorkPlanCategory.all.map{|w| [w.name,w.id]}] 
-      f.input :tanggapan #, :label => "Tanggal Proses", :as => :datepicker
       
-      f.buttons
+      if params[:dikembalikan]
+        f.input :uraian, :input_html => { :disabled => true }   
+        f.input :rekomendasi, :input_html => { :disabled => true }     
+        f.input :tanggapan, :input_html => { :disabled => true }   
+        f.input :catatan_pengembalian
+        f.input :status, :as => :hidden, :input_html => { :value => "Dikembalikan" }  
+        
+        f.actions do
+          f.action :submit, :label => "Dikembalikan" 
+        end
+         
+      else
+        f.input :uraian 
+        f.input :rekomendasi  
+        f.input :tanggapan
+        
+        f.buttons
+      end
+            
     end              
   end
   

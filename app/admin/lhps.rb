@@ -1,5 +1,5 @@
 ActiveAdmin.register Lhp do
-  config.clear_sidebar_sections!
+  #config.clear_sidebar_sections!
   menu :label => "LHP", :if => proc{ can?(:manage, Lhp) }
   controller.authorize_resource
   
@@ -9,7 +9,7 @@ ActiveAdmin.register Lhp do
         if lhp.status == "Ditolak" || lhp.status == "Diinput"
           link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id, :work_plan_id => lhp.work_plan.id))
         elsif lhp.status == "Disetujui"
-          link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id))
+          link_to("#{lhp.id}", admin_lhp_path(lhp.id))
         elsif lhp.status == "Dikirim"
           link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id))
         end
@@ -28,27 +28,55 @@ ActiveAdmin.register Lhp do
     end
   end
   
-  form do |f|
-    if params[:work_plan_id] 
-      work_plan = WorkPlan.find(params[:work_plan_id])
-      f.inputs do
-        f.input :periode_mock, :label => "Periode/Tahun", :input_html => { :value => work_plan.pkpt.periode, :disabled => true }  
-        f.input :work_plan_id_mock, :label => "Kode Rencana Kerja", :input_html => { :value => work_plan.id, :disabled => true }
-        f.input :work_plan_detail_mock, :label => "Rencana Kerja", :input_html => { :value => work_plan.work_plan_details, :disabled => true }
-        f.input :entity, :label => "Orbrik", :as => :select, :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}] 
-        f.input :keterangan
-        f.input :tanggal_awal, :label => "Waktu Pemeriksaan", :as => :datepicker
-        f.input :tanggal_akhir, :label => "Sampai Dengan", :as => :datepicker
-        f.input :work_plan_id, :as => :hidden, :input_html => { :value => params[:work_plan_id] } 
-      end
-      f.inputs "Tim Pengawas", :for => [:team, f.object.team || Team.new] do |team_form|
-        team_form.input :leader_id, :label => "Ketua Tim", :as => :select, :collection => Hash[AdminUser.with_role("Ketua Tim").all.map{|e| [e.email,e.id]}]
-        team_form.input :admin_users, :label => "Anggota", :as => :check_boxes, :collection => Hash[AdminUser.with_role("Anggota Tim").all.map{|e| [e.email,e.id]}]
-      end
-                                                      
-      f.buttons 
-    end                      
-  end
+  form :partial => "form"
+  
+  # form do |f|
+  #     if params[:work_plan_id] 
+  #       work_plan = WorkPlan.find(params[:work_plan_id])
+  #       f.inputs do
+  #         f.input :periode_mock, :label => "Periode/Tahun", :input_html => { :value => work_plan.pkpt.periode, :disabled => true }  
+  #         f.input :work_plan_id_mock, :label => "Kode Rencana Kerja", :input_html => { :value => work_plan.id, :disabled => true }
+  #         f.input :work_plan_detail_mock, :label => "Rencana Kerja", :input_html => { :value => work_plan.work_plan_details, :disabled => true }
+  #         f.input :entity, :label => "Orbrik", :as => :select, :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}] 
+  #         f.input :keterangan
+  #         f.input :tanggal_awal, :label => "Waktu Pemeriksaan", :as => :datepicker
+  #         f.input :tanggal_akhir, :label => "Sampai Dengan", :as => :datepicker
+  #         f.input :work_plan_id, :as => :hidden, :input_html => { :value => params[:work_plan_id] } 
+  #       end
+  #       
+  #       if f.object.new_record?
+  #         f.inputs "Tim Pengawas", :for => [:team, f.object.team || Team.new] do |team_form|
+  #           team_form.input :leader_id, :label => "Ketua Tim", :as => :select, :collection => Hash[AdminUser.with_role("Ketua Tim").all.map{|e| [e.email,e.id]}]
+  #           team_form.input :admin_users, :label => "Anggota", :as => :check_boxes, :collection => Hash[AdminUser.with_role("Anggota Tim").all.map{|e| [e.email,e.id]}]
+  #         end
+  #       else
+  #         f.inputs "Tim Pengawas", :for => [:team, f.object.team || Team.new] do |p|
+  #           p.input :leader_id, :label => "Ketua Tim", :as => :select, :collection => Hash[AdminUser.with_role("Ketua Tim").all.map{|e| [e.email,e.id]}], :input_html => { :disabled => true }  
+  #           p.input :admin_users, :label => "Anggota", :as => :select, :collection => Hash[p.object.admin_users.with_role("Anggota Tim").all.map{|e| [e.email,e.id]}]
+  #         end
+  #         f.inputs do
+  #           f.input :pendahuluan
+  #           f.input :penutup
+  #           f.input :status_mock, :input_html => { :value => f.object.status, :disabled => true }  
+  #           f.input :updated_at_mock, :label => "Tanggal", :input_html => { :value => f.object.updated_at.strftime("%d %B %Y") , :disabled => true }  
+  #           f.input :catatan_pengembalian_mock,  :label => "Catatan Pengembalian", :input_html => { :value => f.object.catatan_pengembalian, :disabled => true }  
+  #         end
+  # 
+  #         f.inputs "Hasil Pemeriksaan" do 
+  #           f.has_many :examinations do |p| 
+  #              p.input :uraian, :input_html => { :disabled => true }
+  #              p.input :rekomendasi,:input_html => { :class => 'autogrow', :rows => 10, :cols => 20, :maxlength => 10  } 
+  #              p.input :tanggapan, :input_html => { :disabled => true } 
+  #              p.input :status, :input_html => { :disabled => true } 
+  #              p.input :created_at, :label => "Tanggal", :input_html => { :disabled => true } 
+  #           end 
+  #         end
+  #          
+  #       end
+  #                                                       
+  #       f.buttons 
+  #     end                      
+  #   end
   
   
   show do |lhp|
@@ -69,28 +97,8 @@ ActiveAdmin.register Lhp do
         lhp.work_plan.pkpt.periode
       end
       
-
-      if lhp.team
-        row 'Ketua Tim' do
-          AdminUser.find(lhp.team.leader_id).fullname
-          # table_for pkpt.work_plans do
-          #    column("Anggota") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
-          #  end
-        end
-        
-        # row '' do
-        #           table_for lhp.work_plan.team.admin_users do
-        #              column("Anggota") { |u| u.fullname } 
-        #            end
-        #         end
-      end
-      
-      row 'Maksud dan Tujuan' do
-        lhp.maksud_tujuan
-      end
-      
-      row 'Program Pemeriksaan' do
-        lhp.program_pemeriksaan
+      row 'Keterangan' do
+        lhp.keterangan
       end
       
       row 'Hasil Pemeriksaan' do
@@ -111,9 +119,11 @@ ActiveAdmin.register Lhp do
       
       end
       
-      row ' ' do
-        link_to("Tambah Hasil Pemeriksaan", new_admin_examination_path(:lhp => lhp.id), :method => :get, :class => "button") + "   " + 
-        link_to("Kirim LHP", send_report_admin_lhp_path(:id => lhp.id), :method => :put, :class => "button")
+      if current_admin_user.has_role?("Anggota Tim") && (lhp.status == "Diinput" || lhp.status == "Dikembalikan")
+        row ' ' do
+          link_to("Tambah Hasil Pemeriksaan", new_admin_examination_path(:lhp => lhp.id), :method => :get, :class => "button") + "   " + 
+          link_to("Kirim LHP", send_report_admin_lhp_path(:id => lhp.id), :method => :put, :class => "button")
+        end
       end
  
     end
@@ -127,4 +137,12 @@ ActiveAdmin.register Lhp do
     redirect_to admin_pkpts_path 
   end
   
+  member_action :send_lhp, :method => :put do
+    lhp = Lhp.find(params[:id])
+    lhp.dikirim
+    flash[:notice] = "Success Sent"
+    redirect_to admin_lhps_path 
+  end
+  
+
 end

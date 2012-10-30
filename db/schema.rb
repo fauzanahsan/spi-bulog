@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121028041443) do
+ActiveRecord::Schema.define(:version => 20121030010149) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -84,9 +84,6 @@ ActiveRecord::Schema.define(:version => 20121028041443) do
 
   create_table "examinations", :force => true do |t|
     t.integer  "lhp_id"
-    t.string   "uraian",               :default => ""
-    t.string   "rekomendasi",          :default => ""
-    t.string   "tanggapan",            :default => ""
     t.string   "status",               :default => "Diinput"
     t.string   "created_by",           :default => ""
     t.string   "updated_by",           :default => ""
@@ -98,6 +95,10 @@ ActiveRecord::Schema.define(:version => 20121028041443) do
     t.text     "catatan_pengembalian"
     t.datetime "created_at",                                  :null => false
     t.datetime "updated_at",                                  :null => false
+    t.text     "uraian"
+    t.text     "rekomendasi"
+    t.text     "tanggapan"
+    t.text     "tindak_lanjut"
   end
 
   add_index "examinations", ["lhp_id"], :name => "index_examinations_on_lhp_id"
@@ -120,6 +121,8 @@ ActiveRecord::Schema.define(:version => 20121028041443) do
     t.text     "program_pemeriksaan"
     t.text     "maksud_tujuan"
     t.text     "keterangan"
+    t.text     "pendahuluan"
+    t.text     "penutup"
   end
 
   add_index "lhps", ["entity_id", "work_plan_id"], :name => "lhp_entity_work_plan"

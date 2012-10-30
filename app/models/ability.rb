@@ -40,6 +40,7 @@ class Ability
     
     if admin_user.has_role? "Ketua Tim"
       can :manage, Lhp
+      can :manage, Examination
     end
     
     if admin_user.has_role? "Anggota Tim"
