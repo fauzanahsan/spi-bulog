@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121030010149) do
+ActiveRecord::Schema.define(:version => 20121030162907) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -99,6 +99,7 @@ ActiveRecord::Schema.define(:version => 20121030010149) do
     t.text     "rekomendasi"
     t.text     "tanggapan"
     t.text     "tindak_lanjut"
+    t.string   "status_tindak_lanjut", :default => ""
   end
 
   add_index "examinations", ["lhp_id"], :name => "index_examinations_on_lhp_id"

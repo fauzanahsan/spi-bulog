@@ -21,22 +21,32 @@ ActiveAdmin.register Examination do
         f.input :lhp
       end
       
+      if !f.object.new_record?
+        f.input :periode_mock, :label => "Periode", :input_html => { :value => f.object.lhp.work_plan.pkpt.periode, :disabled => true }
+        f.input :program_kerja_mock, :label => "Program Kerja", :input_html => { :value => f.object.lhp.work_plan.work_plan_details, :disabled => true }
+      end
+      
+      f.input :uraian, :input_html => { :disabled => current_admin_user.has_role?("Ketua Tim") }   
+      f.input :rekomendasi, :input_html => { :disabled => current_admin_user.has_role?("Ketua Tim") }     
+      f.input :tanggapan, :input_html => { :disabled => current_admin_user.has_role?("Ketua Tim") }   
       if params[:dikembalikan]
-        f.input :uraian, :input_html => { :disabled => true }   
-        f.input :rekomendasi, :input_html => { :disabled => true }     
-        f.input :tanggapan, :input_html => { :disabled => true }   
         f.input :catatan_pengembalian
         f.input :status, :as => :hidden, :input_html => { :value => "Dikembalikan" }  
-        
+    
         f.actions do
           f.action :submit, :label => "Dikembalikan" 
         end
-         
-      else
-        f.input :uraian 
-        f.input :rekomendasi  
-        f.input :tanggapan
         
+      elsif params[:tindak_lanjut]
+        f.input :tindak_lanjut
+        f.input :status_tindak_lanjut, :as => :select, :collection => ["Tindak Lanjut", "Proses"] 
+    
+        f.actions do
+          f.action :submit, :label => "Simpan" 
+        end
+       
+      else
+      
         f.buttons
       end
             

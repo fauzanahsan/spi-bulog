@@ -11,7 +11,7 @@ ActiveAdmin.register Lhp do
         elsif lhp.status == "Disetujui"
           link_to("#{lhp.id}", admin_lhp_path(lhp.id))
         elsif lhp.status == "Dikirim"
-          link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id))
+          link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id, :work_plan_id => lhp.work_plan.id))
         end
       }
       column("Keterangan", :keterangan)
@@ -110,10 +110,13 @@ ActiveAdmin.register Lhp do
           column("Tanggapan", :tanggapan)
           column("Status", :status)
           column("Tanggal") { |examination| examination.created_at.strftime("%d %B %Y") }
-          column("Proses") { |examination| #if !wp.returned? 
-                                    link_to("Ubah", edit_admin_examination_path(examination.id))  + " " +
-                                    link_to("Kembalikan", edit_admin_examination_path(examination.id, :dikembalikan => true))
-                                  #end
+          column("Proses") { |examination| 
+                              if lhp.status == 'Disetujui'
+                                link_to("Tindak Lanjut", edit_admin_examination_path(examination.id, :tindak_lanjut => true))
+                              else
+                                link_to("Ubah", edit_admin_examination_path(examination.id))  + " " +
+                                link_to("Kembalikan", edit_admin_examination_path(examination.id, :dikembalikan => true))
+                              end
           }  
         end
       

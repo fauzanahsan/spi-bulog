@@ -44,7 +44,8 @@ class Ability
     end
     
     if admin_user.has_role? "Anggota Tim"
-      can :manage, Pkpt
+      can :manage, Lhp
+      can :manage, Examination
     end
     
   end

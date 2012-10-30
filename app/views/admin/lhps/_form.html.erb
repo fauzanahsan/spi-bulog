@@ -1,14 +1,15 @@
 <%= semantic_form_for @lhp, :url => admin_lhp_path(@lhp) do |f| %>
 	<% if params[:work_plan_id]  %>
+	  <% flag = (!f.object.new_record? && f.object.status == "Dikirim") || (!f.object.new_record? && current_admin_user.has_role?("Anggota Tim"))  %>
 	  <% work_plan = WorkPlan.find(params[:work_plan_id]) %>
 	  <%= f.inputs do %>
 	    <%= f.input :periode_mock, :label => "Periode/Tahun", :input_html => { :value => work_plan.pkpt.periode, :disabled => true }   %>
 		  <%= f.input :work_plan_id_mock, :label => "Kode Rencana Kerja", :input_html => { :value => work_plan.id, :disabled => true } %>
       <%= f.input :work_plan_detail_mock, :label => "Rencana Kerja", :input_html => { :value => work_plan.work_plan_details, :disabled => true } %>
-      <%= f.input :entity, :label => "Orbrik", :as => :select, :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}]  %>
-      <%= f.input :keterangan %>
-      <%= f.input :tanggal_awal, :label => "Waktu Pemeriksaan", :as => :string, :input_html => {:class => "datepicker"} %>
-      <%= f.input :tanggal_akhir, :label => "Sampai Dengan", :as => :string, :input_html => {:class => "datepicker"} %>
+      <%= f.input :entity, :label => "Orbrik", :as => :select, :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}], :input_html => { :disabled => flag }  %>
+      <%= f.input :keterangan, :input_html => { :disabled => flag } %>
+      <%= f.input :tanggal_awal, :label => "Waktu Pemeriksaan", :as => :string, :input_html => {:class => "datepicker", :disabled => flag } %>
+      <%= f.input :tanggal_akhir, :label => "Sampai Dengan", :as => :string, :input_html => {:class => "datepicker", :disabled => flag } %>
       <%= f.input :work_plan_id, :as => :hidden, :input_html => { :value => params[:work_plan_id] }   %>
 	  <% end %>
 	  
@@ -24,8 +25,8 @@
 	    <% end %>
 	    
 	    <%= f.inputs do %>
-	      <%= f.input :pendahuluan %>
-	      <%= f.input :penutup %>
+	      <%= f.input :pendahuluan, :input_html => { :disabled => flag } %>
+	      <%= f.input :penutup, :input_html => { :disabled => flag } %>
 	      <%= f.input :status_mock, :label => "Status", :input_html => { :value => f.object.status, :disabled => true } %>
 	      <%= f.input :updated_at_mock, :label => "Tanggal", :input_html => { :value => f.object.updated_at.strftime("%d %B %Y") , :disabled => true }   %>
 	      <%= f.input :catatan_pengembalian_mock,  :label => "Catatan Pengembalian", :input_html => { :value => f.object.catatan_pengembalian, :disabled => true } %>
@@ -39,7 +40,9 @@
               <th>Tanggapan</th>
               <th>Status</th>
               <th>Tanggal</th>
-              <th>Proses</th>
+              <% if !f.object.new_record? && f.object.status != "Dikirim" %>
+                <th>Proses</th>
+              <% end %>
             </tr>
 
           <%= f.semantic_fields_for :examinations do |w| %>
@@ -49,7 +52,13 @@
                   <td><%= w.object.tanggapan %></td>
                   <td><%= w.object.status %></td>
                   <td><%= w.object.created_at.strftime("%d %B %Y")  %></td>
-                  <td><%= link_to("Kembalikan", edit_admin_examination_path(w.object.id, :dikembalikan => true)) %></td>
+                  <% if !f.object.new_record? && f.object.status != "Dikirim" %>
+                    <% if current_admin_user.has_role?("Ketua Tim") %>
+                      <td><%= link_to("Kembalikan", edit_admin_examination_path(w.object.id, :dikembalikan => true)) %></td>
+                    <% elsif current_admin_user.has_role?("Anggota Tim") %>
+                      <td><%= link_to("Ubah", edit_admin_examination_path(w.object.id)) %></td>
+                    <% end %>
+                  <% end %>
                 </tr>
           <% end %>
 
@@ -60,10 +69,24 @@
 	    
 	  <% end %>
     
-    <%= f.actions do %>
-      <%= f.action :submit, :label => "Simpan" %>
-      <% if !f.object.new_record? %>
-        <li class="button"><%= link_to "Kirim LHP", send_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
+    <% if current_admin_user.has_role?("Ketua Tim") %>
+      <% if !f.object.new_record? && f.object.status != "Dikirim" %>
+        <%= f.actions do %>
+          <%= f.action :submit, :label => "Simpan" %>
+          <% if !f.object.new_record? %>
+            <li class="button"><%= link_to "Kirim LHP", send_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
+          <% end %>
+        <% end %>
+      <% end %>
+      
+    <% elsif %>
+      <% if !f.object.new_record? && f.object.status != "Dikirim" %>
+        <%= f.actions do %>
+          <% if !f.object.new_record? %>
+            <li class="button"><%= link_to "Kirim Hasil Pemeriksaan", send_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
+            <li class="button"><%= link_to "Tambah Hasil Pemeriksaan", new_admin_examination_path(:lhp => f.object.id), :class => "button" %></li>
+          <% end %>
+        <% end %>
       <% end %>
     <% end %>
     
