@@ -1,0 +1,51 @@
+<%= semantic_form_for @recapitulation, :url => admin_recapitulation_path(@recapitulation) do |f| %>
+  <%= f.inputs do %>
+    <% if f.object.new_record? %>
+      <%= f.input :periode, :as => :select, :collection => ['2012', '2013', '2014'] %>
+    <% else %>
+      <%= f.input :periode, :label => "Kode Rencana Kerja", :input_html => { :disabled => true } %>
+    <% end %>
+    
+    <%= f.input :keterangan_pembuka %>
+    
+    <% if !f.object.new_record? %>    
+      <%= f.inputs "PKPT Dikirim" do %>
+        <table>
+          <tr>
+            <th>Entitas</th>
+            <th>Wilayah</th>
+          </tr>
+          <% Pkpt.where(:status => "Dikirim").each do |pp| %>
+            <tr>
+              <td><%= pp.entity.entitas %></td>
+              <td><%= "Wilayah #{pp.entity.wilayah}" %></td>
+            <tr>
+          <% end %>
+        </table>
+      <% end %>
+    
+      <%= f.inputs "PKPT Tidak Dikirim" do %>
+        <table>
+          <tr>
+            <th>Entitas</th>
+            <th>Wilayah</th>
+          </tr>
+          <% Pkpt.where("status != ?", "Dikirim").each do |pp| %>
+            <tr>
+              <td><%= pp.entity.entitas %></td>
+              <td><%= "Wilayah #{pp.entity.wilayah}" %></td>
+            <tr>
+          <% end %>
+        </table>
+      <% end %>
+    <% end %>
+    
+    <%= f.input :keterangan_penutup %>
+  
+  <% end %>
+  
+  <%= f.actions do %>
+    <%= f.action :submit, :label => "Simpan" %>
+  <% end %>
+  
+<% end %>

@@ -16,4 +16,8 @@ class Lhp < ActiveRecord::Base
     save
   end
   
+  def team_managed
+    self.team.id
+  end
+  
 end

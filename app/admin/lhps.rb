@@ -2,6 +2,7 @@ ActiveAdmin.register Lhp do
   #config.clear_sidebar_sections!
   menu :label => "LHP", :if => proc{ can?(:manage, Lhp) }
   controller.authorize_resource
+  #scope_to lambda { current_admin_user.own_team_id.include? :team_managed}
   
   index do
     if current_admin_user.has_role?("Ketua Tim") || current_admin_user.has_role?("Anggota Tim")
@@ -132,6 +133,17 @@ ActiveAdmin.register Lhp do
     end
     
   end
+  
+  # controller do
+  #    def index
+  #      @lhp = Lhp.all
+  #      # Lhp.all.each do |lhp|
+  #      #         if current_admin_user.teams.map(&:id).include? lhp.team.id
+  #      #           @lhp << lhp
+  #      #         end
+  #      #       end
+  #    end
+  #  end
   
   member_action :send_report, :method => :put do
     lhp = Lhp.find(params[:id])

@@ -20,4 +20,8 @@ class AdminUser < ActiveRecord::Base
     self.entity.pkpt_aktif
   end
   
+  def own_team_id
+    self.teams.map(&:id)
+  end
+  
 end
