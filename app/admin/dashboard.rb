@@ -31,6 +31,7 @@ ActiveAdmin.register_page "Dashboard" do
                       link_to("Lihat", admin_pkpt_path(ent.pkpt_aktif.id)) if !ent.pkpt_aktif.blank? 
                     end  
                   end
+                  
                 end
               end
             
@@ -52,8 +53,19 @@ ActiveAdmin.register_page "Dashboard" do
                   end
       
                   td do
+                    if ent.entitas == current_admin_user.entity.entitas
+                      if ent.pkpt_aktif.blank? 
+                        link_to("Baru", new_admin_pkpt_path)
+                      elsif ent.pkpt_aktif.status == "Disetujui"
+                        link_to("Proses LHP", admin_pkpt_path(ent.pkpt_aktif.id))
+                      else
+                        link_to("Edit", admin_pkpt_path(ent.pkpt_aktif.id))
+                      end
+                    else
                       link_to("Lihat", admin_pkpt_path(ent.pkpt_aktif.id)) if !ent.pkpt_aktif.blank? 
+                    end  
                   end
+                  
                 end
               end
             
@@ -74,7 +86,7 @@ ActiveAdmin.register_page "Dashboard" do
                 end
     
                 td do
-                    link_to("Edit", admin_pkpt_path(current_admin_user.entity.pkpt_aktif.id)) if !current_admin_user.entity.pkpt_aktif.blank? 
+                  link_to("Edit", admin_pkpt_path(current_admin_user.entity.pkpt_aktif.id)) if !current_admin_user.entity.pkpt_aktif.blank? 
                 end
               end
             

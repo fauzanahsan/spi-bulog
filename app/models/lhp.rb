@@ -16,6 +16,26 @@ class Lhp < ActiveRecord::Base
     save
   end
   
+  def dikirim_anggota_tim
+    self.status = "Dikirim oleh Anggota Tim"
+    save
+  end
+  
+  def dikirim_ketua_tim
+    self.status = "Dikirim oleh Ketua Tim"
+    save
+  end
+  
+  def dikembalikan
+    self.status = "Dikembalikan"
+    save
+  end
+  
+  def disetujui
+    self.status = "Disetujui"
+    save
+  end
+  
   def team_managed
     self.team.id
   end

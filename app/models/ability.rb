@@ -5,12 +5,11 @@ class Ability
     admin_user ||= AdminUser.new
 
     if admin_user.has_role? "Admin"
-      #can :manage, AdminUser
-      can :manage, :all
+      can :manage, AdminUser
+      can :manage, Entity
     end
     
     if admin_user.has_role? "Korwaswil"
-      #can :manage, :all
       can :manage, Pkpt
       can :manage, Lhp
       can :manage, WorkPlan
@@ -22,11 +21,14 @@ class Ability
     
     if admin_user.has_role? "Kepala SPI"
       can :manage, Pkpt
+      can :manage, Lhp
+      can :manage, Recapitulation
     end
     
     if admin_user.has_role? "Kabidwas"
-      can :manage, :all
       can :manage, Pkpt
+      can :manage, Lhp
+      can :manage, WorkPlan
     end
     
     if admin_user.has_role? "Staff"

@@ -4,6 +4,19 @@ ActiveAdmin.register Lhp do
   controller.authorize_resource
   #scope_to lambda { current_admin_user.own_team_id.include? :team_managed}
   
+  filter :entity, :label => "Entitas", :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}]
+  filter :keterangan
+  filter :tanggal_awal
+  filter :tanggal_akhir
+  filter :created_by
+  filter :updated_by
+  filter :accepted_by
+  filter :created_at
+  filter :updated_at
+  filter :accepted_at
+  filter :catatan_pengembalian
+  
+  
   index do
     if current_admin_user.has_role?("Ketua Tim") || current_admin_user.has_role?("Anggota Tim")
       column("ID LHP"){ |lhp| 
@@ -15,6 +28,14 @@ ActiveAdmin.register Lhp do
           link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id, :work_plan_id => lhp.work_plan.id))
         end
       }
+      column("Keterangan", :keterangan)
+      column("Jumlah Temuan"){ |lhp| lhp.examinations.count }
+      column("Status", :status)
+    elsif current_admin_user.has_role?("Korwaswil") || current_admin_user.has_role?("Kabidwas")
+      column("ID LHP"){ |lhp| 
+          link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id, :work_plan_id => lhp.work_plan.id))
+      }
+      column("Entitas"){|lhp| lhp.work_plan.pkpt.entity.entitas }
       column("Keterangan", :keterangan)
       column("Jumlah Temuan"){ |lhp| lhp.examinations.count }
       column("Status", :status)
@@ -30,55 +51,6 @@ ActiveAdmin.register Lhp do
   end
   
   form :partial => "form"
-  
-  # form do |f|
-  #     if params[:work_plan_id] 
-  #       work_plan = WorkPlan.find(params[:work_plan_id])
-  #       f.inputs do
-  #         f.input :periode_mock, :label => "Periode/Tahun", :input_html => { :value => work_plan.pkpt.periode, :disabled => true }  
-  #         f.input :work_plan_id_mock, :label => "Kode Rencana Kerja", :input_html => { :value => work_plan.id, :disabled => true }
-  #         f.input :work_plan_detail_mock, :label => "Rencana Kerja", :input_html => { :value => work_plan.work_plan_details, :disabled => true }
-  #         f.input :entity, :label => "Orbrik", :as => :select, :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}] 
-  #         f.input :keterangan
-  #         f.input :tanggal_awal, :label => "Waktu Pemeriksaan", :as => :datepicker
-  #         f.input :tanggal_akhir, :label => "Sampai Dengan", :as => :datepicker
-  #         f.input :work_plan_id, :as => :hidden, :input_html => { :value => params[:work_plan_id] } 
-  #       end
-  #       
-  #       if f.object.new_record?
-  #         f.inputs "Tim Pengawas", :for => [:team, f.object.team || Team.new] do |team_form|
-  #           team_form.input :leader_id, :label => "Ketua Tim", :as => :select, :collection => Hash[AdminUser.with_role("Ketua Tim").all.map{|e| [e.email,e.id]}]
-  #           team_form.input :admin_users, :label => "Anggota", :as => :check_boxes, :collection => Hash[AdminUser.with_role("Anggota Tim").all.map{|e| [e.email,e.id]}]
-  #         end
-  #       else
-  #         f.inputs "Tim Pengawas", :for => [:team, f.object.team || Team.new] do |p|
-  #           p.input :leader_id, :label => "Ketua Tim", :as => :select, :collection => Hash[AdminUser.with_role("Ketua Tim").all.map{|e| [e.email,e.id]}], :input_html => { :disabled => true }  
-  #           p.input :admin_users, :label => "Anggota", :as => :select, :collection => Hash[p.object.admin_users.with_role("Anggota Tim").all.map{|e| [e.email,e.id]}]
-  #         end
-  #         f.inputs do
-  #           f.input :pendahuluan
-  #           f.input :penutup
-  #           f.input :status_mock, :input_html => { :value => f.object.status, :disabled => true }  
-  #           f.input :updated_at_mock, :label => "Tanggal", :input_html => { :value => f.object.updated_at.strftime("%d %B %Y") , :disabled => true }  
-  #           f.input :catatan_pengembalian_mock,  :label => "Catatan Pengembalian", :input_html => { :value => f.object.catatan_pengembalian, :disabled => true }  
-  #         end
-  # 
-  #         f.inputs "Hasil Pemeriksaan" do 
-  #           f.has_many :examinations do |p| 
-  #              p.input :uraian, :input_html => { :disabled => true }
-  #              p.input :rekomendasi,:input_html => { :class => 'autogrow', :rows => 10, :cols => 20, :maxlength => 10  } 
-  #              p.input :tanggapan, :input_html => { :disabled => true } 
-  #              p.input :status, :input_html => { :disabled => true } 
-  #              p.input :created_at, :label => "Tanggal", :input_html => { :disabled => true } 
-  #           end 
-  #         end
-  #          
-  #       end
-  #                                                       
-  #       f.buttons 
-  #     end                      
-  #   end
-  
   
   show do |lhp|
     attributes_table do
@@ -158,6 +130,21 @@ ActiveAdmin.register Lhp do
     flash[:notice] = "Success Sent"
     redirect_to admin_lhps_path 
   end
+  
+  member_action :accept_lhp, :method => :put do
+    lhp = Lhp.find(params[:id])
+    lhp.disetujui
+    flash[:notice] = "Success Accepted"
+    redirect_to admin_lhps_path 
+  end
+  
+  member_action :send_back_lhp, :method => :put do
+    lhp = Lhp.find(params[:id])
+    lhp.dikembalikan
+    flash[:notice] = "Success Sent Back"
+    redirect_to admin_lhps_path 
+  end
+
   
 
 end

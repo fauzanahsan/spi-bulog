@@ -119,12 +119,8 @@ ActiveAdmin.register Pkpt do
             column("Status", :status)
             column("Tanggal") { |wp| wp.created_at.strftime("%d %B %Y") }
         
-            if current_admin_user.has_role? "Korwaswil" && current_admin_user.own_pkpt.id == pkpt.id
-              column("Proses") { |wp| 
-                                        #link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put)                                     
-                                        link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) 
-                                        #link_to("Tambah Tim", new_admin_team_path(:work_plan_id => wp.id), :method => :get)
-                                }  
+            if (current_admin_user.has_role?("Korwaswil") || current_admin_user.has_role?("Kabidwas")) && current_admin_user.own_pkpt.id == pkpt.id
+              column("Proses") { |wp| link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) }  
             end
         
             if current_admin_user.has_role? "Staff"
@@ -148,7 +144,7 @@ ActiveAdmin.register Pkpt do
           end
         end
     
-        if current_admin_user.has_role? "Korwaswil" && current_admin_user.entity.pkpt_aktif && current_admin_user.entity.pkpt_aktif.id == pkpt.id
+        if (current_admin_user.has_role?("Korwaswil") || current_admin_user.has_role?("Kabidwas"))  && current_admin_user.entity.pkpt_aktif && current_admin_user.entity.pkpt_aktif.id == pkpt.id
           row ' ' do
             link_to("Kirim PKPT", kirim_admin_pkpt_path(:id => pkpt.id), :method => :put, :class => "button") 
           end
