@@ -31,7 +31,7 @@ ActiveAdmin.register Lhp do
       column("Keterangan", :keterangan)
       column("Jumlah Temuan"){ |lhp| lhp.examinations.count }
       column("Status", :status)
-    elsif current_admin_user.has_role?("Korwaswil") || current_admin_user.has_role?("Kabidwas")
+    elsif current_admin_user.has_role?("Korwaswil") || current_admin_user.has_role?("Kabidwas") || current_admin_user.has_role?("Kepala SPI") 
       column("ID LHP"){ |lhp| 
           link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id, :work_plan_id => lhp.work_plan.id))
       }

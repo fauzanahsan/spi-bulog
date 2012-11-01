@@ -1,7 +1,15 @@
 <% if current_admin_user.has_role?("Korwaswil") %>
-  <%= render :partial => "form_korwaswil" %>
+  <% if ["edit", "update"].include? params[:action] %>
+    <%= render :partial => "form_korwaswil" %>
+  <% else %>
+    <%= render :partial => "new_form_korwaswil" %>
+  <% end %>
 <% elsif current_admin_user.has_role?("Kabidwas")  %>
-  <%= render :partial => "form_kabidwas" %>
+  <% if ["edit", "update"].include? params[:action] %>
+    <%= render :partial => "form_kabidwas" %>
+  <% else %>
+    <%= render :partial => "new_form_kabidwas" %>
+  <% end %>
 <% else %>
   <%= render :partial => "form_ketua_anggota" %>
 <% end %>

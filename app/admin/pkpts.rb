@@ -1,6 +1,7 @@
 ActiveAdmin.register Pkpt do
   menu :label => "PKPT", :if => proc{ can?(:manage, Pkpt) }
   controller.authorize_resource
+  #actions :all, :except => [:destroy]
   
   filter :id, :label => "Kode PKPT"
   filter :periode, :as => :select, :collection => ['2012','2013','2014']  
@@ -20,25 +21,7 @@ ActiveAdmin.register Pkpt do
       f.input :wilayah, :as => :hidden, :input_html => { :value => current_admin_user.entity.provinsi }    
             
     end
-    # if !f.object.new_record?
-    #       
-    #        table_for f.object.work_plans do
-    #          column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
-    #          column("Deskripsi", :description)
-    #          column("Staff Input", :staff_input)
-    #          column("Kategori") { |wp| wp.work_plan_category.name }
-    #          column("Status", :status)
-    #          column("Tanggal") { |wp| wp.tanggal_proses.strftime("%d %B %Y") }
-    #          column("Proses") { |wp| #if !wp.returned? 
-    #                                    #link_to("Kembalikan", work_plan_return_admin_pkpt_path(:id => wp.id, :pkpt_id => pkpt.id), :method => :put) 
-    #                                    link_to("Ubah", edit_admin_work_plan_path(wp.id))  + " " +
-    #                                    link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) + " " +
-    #                                    link_to("Tambah Tim", new_admin_team_path(:work_plan_id => wp.id), :method => :get)
-    #                                  #end
-    #          }  
-    #        end
-    #            
-    #     end
+
     f.buttons                         
   end
   
@@ -55,7 +38,7 @@ ActiveAdmin.register Pkpt do
   
   show do |pkpt|
     attributes_table do
-      if pkpt.status == 'Disetujui'
+      if pkpt.status == 'Disetujui' && current_admin_user.entity.id == pkpt.entity.id
         row 'Periode' do
           pkpt.periode
         end
@@ -68,7 +51,7 @@ ActiveAdmin.register Pkpt do
             column("Keterangan", :work_plan_details)
             column("Jumlah LHP") { |wp| wp.lhps.count }
             
-            if current_admin_user.own_pkpt.id == pkpt.id && current_admin_user.has_role?("Korwaswil") 
+            if current_admin_user.own_pkpt.id == pkpt.id && (current_admin_user.has_role?("Korwaswil") || current_admin_user.has_role?("Kabidwas"))  
               column("Proses") { |wp| link_to("Buat LHP", new_admin_lhp_path(:work_plan_id => wp.id))  }  
             end
             

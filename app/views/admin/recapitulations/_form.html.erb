@@ -1,3 +1,5 @@
-<% if current_admin_user.has_role?("Staff Tata Usaha") %>
+<% if current_admin_user.has_role?("Kepala SPI") %>
+  <%= render :partial => "form_kepala_spi" %>
+<% elsif current_admin_user.has_role?("Staff Tata Usaha") %>%>
   <%= render :partial => "form_tata_usaha" %>
 <% end %>

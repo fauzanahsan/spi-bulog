@@ -1,0 +1,26 @@
+<%= semantic_form_for [:admin, @lhp] do |f| %>
+	<% if params[:work_plan_id]  %>
+	  <% work_plan = WorkPlan.find(params[:work_plan_id]) %>
+	  <%= f.inputs do %>
+	    <%= f.input :periode_mock, :label => "Periode/Tahun", :input_html => { :value => work_plan.pkpt.periode, :disabled => true }   %>
+		  <%= f.input :work_plan_id_mock, :label => "Kode Rencana Kerja", :input_html => { :value => work_plan.id, :disabled => true } %>
+      <%= f.input :work_plan_detail_mock, :label => "Rencana Kerja", :input_html => { :value => work_plan.work_plan_details, :disabled => true } %>
+      <%= f.input :entity_id, :label => "Orbrik", :as => :select, :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}] %>
+      <%= f.input :keterangan %>
+      <%= f.input :tanggal_awal, :label => "Waktu Pemeriksaan", :as => :string, :input_html => {:class => "datepicker"} %>
+      <%= f.input :tanggal_akhir, :label => "Sampai Dengan", :as => :string, :input_html => {:class => "datepicker" } %>
+      <%= f.input :work_plan_id, :as => :hidden, :input_html => { :value => params[:work_plan_id] }   %>
+	  <% end %>
+
+    <%= f.inputs "Tim Pengawas", :for => [:team, f.object.team || Team.new] do |team_form| %>
+      <%= team_form.input :leader_id, :label => "Ketua Tim", :as => :select, :collection => Hash[AdminUser.with_role("Ketua Tim").all.map{|e| [e.email,e.id]}] %>
+      <%= team_form.input :admin_users, :label => "Anggota", :as => :check_boxes, :collection => Hash[AdminUser.with_role("Anggota Tim").all.map{|e| [e.email,e.id]}] %>
+    <% end %>
+	  
+    <%= f.actions do %>
+      <%= f.action :submit, :label => "Buat LHP Baru" %>
+    <% end %>
+    
+  <% end %>
+      
+<% end %>
