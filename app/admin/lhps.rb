@@ -106,16 +106,40 @@ ActiveAdmin.register Lhp do
     
   end
   
-  # controller do
-  #    def index
-  #      @lhp = Lhp.all
-  #      # Lhp.all.each do |lhp|
-  #      #         if current_admin_user.teams.map(&:id).include? lhp.team.id
-  #      #           @lhp << lhp
-  #      #         end
-  #      #       end
-  #    end
-  #  end
+  controller do
+    def index
+      index! do |format|
+        
+        ### KORWASWIL
+        if current_admin_user.has_role?("Korwaswil")
+          @lhp = []
+          Lhp.all.each do |lhp|
+            @lhp << lhp if lhp.work_plan.pkpt.entity.wilayah == current_admin_user.entity.wilayah
+          end
+        
+        ### KABIDWAS
+        elsif current_admin_user.has_role?("Kabidwas")
+          @lhps = Lhp.where(:entity_id => current_admin_user.entity.id).page(params[:page])
+          
+        ### ANGGOTA TIM
+        elsif current_admin_user.has_role?("Anggota Tim")
+          @lhps = Lhp.where("id IN (?)", current_admin_user.teams.map(&:lhp_id)).page(params[:page])
+          
+          # Lhp.all.each do |lhp|
+          #    if current_admin_user.teams.map(&:id).include? lhp.team.id
+          #      @lhps << lhp 
+          #    end
+          #  end
+          
+          format.html
+        else
+          @lhps = Lhp.where(:entity_id => current_admin_user.entity.id).page(params[:page])
+        end
+        
+        
+      end
+    end
+  end
   
   member_action :send_report, :method => :put do
     lhp = Lhp.find(params[:id])
