@@ -74,7 +74,7 @@
         <%= f.actions do %>
           <%= f.action :submit, :label => "Simpan" %>
           <% if !f.object.new_record? %>
-            <li class="button"><%= link_to "Kirim LHP", send_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
+            <li class="button"><%= link_to "Kirim LHP", ketua_tim_send_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
           <% end %>
         <% end %>
       <% end %>
@@ -83,7 +83,7 @@
       <% if !f.object.new_record? && f.object.status != "Dikirim" %>
         <%= f.actions do %>
           <% if !f.object.new_record? %>
-            <li class="button"><%= link_to "Kirim Hasil Pemeriksaan", send_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
+            <li class="button"><%= link_to "Kirim Hasil Pemeriksaan", anggota_tim_send_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
             <li class="button"><%= link_to "Tambah Hasil Pemeriksaan", new_admin_examination_path(:lhp => f.object.id), :class => "button" %></li>
           <% end %>
         <% end %>

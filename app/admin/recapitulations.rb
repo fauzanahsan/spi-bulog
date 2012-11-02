@@ -4,4 +4,11 @@ ActiveAdmin.register Recapitulation do
   
   form :partial => "form"
   
+  member_action :rekap, :method => :put do
+    rekap = Recapitulation.find(params[:id])
+    rekap.direkap
+    flash[:notice] = "Sukses Rekap"
+    redirect_to admin_recapitulations_path 
+  end
+  
 end

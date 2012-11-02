@@ -28,12 +28,36 @@ ActiveAdmin.register Pkpt do
   index do
     column("Kode PKPT", :id)
     column("Status", :status)
-    column("Wilayah", :wilayah)
-    column("Entitas"){ |pkpt| pkpt.entity.kota } 
+    column("Wilayah"){|pkpt| "Wilayah #{pkpt.entity.wilayah}" }
+    column("Entitas"){ |pkpt| pkpt.entity.entitas } 
     column("Periode/Tahun", :periode)
     column("Catatan", :notes)
     column(:created_at)
     default_actions
+  end
+  
+  controller do
+    def index
+      index! do |format|
+        
+        ### KORWASWIL
+        if current_admin_user.has_role?("Korwaswil")
+         @entities = Entity.where(:wilayah => current_admin_user.entity.wilayah)
+         @pkpts = Pkpt.where("entity_id IN ?", @entities.map(&:id)).page(params[:page])
+          
+        ### KABIDWAS
+        elsif current_admin_user.has_role?("Kabidwas")
+          @pkpts = Pkpt.where(:entity_id => current_admin_user.entity.id).page(params[:page])
+        
+        ### STAFF
+        elsif current_admin_user.has_role?("Staff")
+          @pkpts = Pkpt.where(:entity_id => current_admin_user.entity.id).page(params[:page])
+        
+        end
+        format.html
+        
+      end
+    end
   end
   
   show do |pkpt|
@@ -94,7 +118,6 @@ ActiveAdmin.register Pkpt do
           else
             @work_plans = pkpt.work_plans
           end
-          #table_for pkpt.work_plans.where(:created_by_id => current_admin_user.id) do
           table_for @work_plans do
             column("Kode") { |wp| link_to("#{wp.id}", admin_work_plan_path(wp.id)) } 
             column("Deskripsi", :work_plan_details)
@@ -102,7 +125,7 @@ ActiveAdmin.register Pkpt do
             column("Status", :status)
             column("Tanggal") { |wp| wp.created_at.strftime("%d %B %Y") }
         
-            if (current_admin_user.has_role?("Korwaswil") || current_admin_user.has_role?("Kabidwas")) && current_admin_user.own_pkpt.id == pkpt.id
+            if (current_admin_user.has_role?("Korwaswil") || current_admin_user.has_role?("Kabidwas")) && current_admin_user.entity.id == pkpt.entity.id
               column("Proses") { |wp| link_to("Kembalikan", edit_admin_work_plan_path(wp.id, :dikembalikan => true)) }  
             end
         

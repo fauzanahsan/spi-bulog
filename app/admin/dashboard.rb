@@ -22,7 +22,7 @@ ActiveAdmin.register_page "Dashboard" do
                     if ent.entitas == current_admin_user.entity.entitas
                       if ent.pkpt_aktif.blank? 
                         link_to("Baru", new_admin_pkpt_path)
-                      elsif ent.pkpt_aktif.status == "Disetujui"
+                      elsif ent.pkpt_aktif.status == "Dikirim"
                         link_to("Proses LHP", admin_pkpt_path(ent.pkpt_aktif.id))
                       else
                         link_to("Edit", admin_pkpt_path(ent.pkpt_aktif.id))
@@ -41,7 +41,7 @@ ActiveAdmin.register_page "Dashboard" do
         
         if current_admin_user.has_role? "Kabidwas"
           panel "Kabidwas" do
-            @entities = Entity.all #current_admin_user.entity.wilayah
+            @entities = Entity.where(:id => current_admin_user.entity.id) 
             table do   
               th do 'Entitas' end
               th do 'Proses' end
@@ -94,7 +94,7 @@ ActiveAdmin.register_page "Dashboard" do
           end #end panel
         end
         
-        if current_admin_user.has_role? "Staff Tata Usaha"
+        if current_admin_user.has_role?("Staff Tata Usaha") || current_admin_user.has_role?("Kepala SPI")  
           panel "Rekapitulasi PKPT" do
             
             table do   

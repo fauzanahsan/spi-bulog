@@ -6,7 +6,7 @@
       <%= f.input :periode, :label => "Kode Rencana Kerja", :input_html => { :disabled => true } %>
     <% end %>
     
-    <%= f.input :keterangan_pembuka, :input_html => { :disabled => true } %>
+    <%= f.input :keterangan_pembuka, :label => "Keterangan Pembuka", :input_html => { :disabled => true } %>
     
     <% if !f.object.new_record? %>    
       <%= f.inputs "PKPT" do %>
@@ -14,13 +14,13 @@
           <tr>
             <th>Entitas</th>
             <th>Wilayah</th>
-            <th>Status</th>
+            <th>Proses</th>
           </tr>
           <% Pkpt.all.each do |pp| %>
             <tr>
-              <td><%= pp.entity.entitas %></td>
+              <td><%= link_to("#{pp.entity.entitas}", admin_pkpt_path(pp.id)) %></td>
               <td><%= "Wilayah #{pp.entity.wilayah}" %></td>
-              <td><%= "Setuju" %></td>
+              <td><%= link_to("Setujui", approve_admin_pkpt_path(pp.id)) unless pp.status == "Disetujui"  %></td>
             <tr>
           <% end %>
         </table>
@@ -28,12 +28,12 @@
       
     <% end %>
     
-    <%= f.input :keterangan_penutup, :input_html => { :disabled => true } %>
+    <%= f.input :keterangan_penutup, :label => "Keterangan Penutup", :input_html => { :disabled => true } %>
   
   <% end %>
   
   <%= f.actions do %>
-    <li class="button"><%= link_to "Setujui", accept_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
+    <!-- <li class="button"><%#= link_to "Setujui", accept_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li> -->
     <li class="button"><%= link_to "Cetak", accept_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
   <% end %>
   

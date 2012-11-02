@@ -19,11 +19,11 @@ ActiveAdmin.register Lhp do
   index do
     if current_admin_user.has_role?("Ketua Tim") || current_admin_user.has_role?("Anggota Tim")
       column("ID LHP"){ |lhp| 
-        if lhp.status == "Ditolak" || lhp.status == "Diinput"
+        if lhp.status == "Dikembalikan" || lhp.status == "Diinput"
           link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id, :work_plan_id => lhp.work_plan.id))
         elsif lhp.status == "Disetujui"
           link_to("#{lhp.id}", admin_lhp_path(lhp.id))
-        elsif lhp.status == "Dikirim"
+        elsif lhp.status == "Dikirim" || lhp.status == "Dikirim oleh Ketua Tim" || lhp.status == "Dikirim oleh Anggota Tim"
           link_to("#{lhp.id}", edit_admin_lhp_path(lhp.id, :work_plan_id => lhp.work_plan.id))
         end
       }
@@ -117,7 +117,7 @@ ActiveAdmin.register Lhp do
             @lhp_ids << lhp.id if lhp.work_plan.pkpt.entity.wilayah == current_admin_user.entity.wilayah
           end
         
-          @lhps = Lhp.where("id IN (?)", @lhp_ids).page(params[:page])
+          @lhps = Lhp.where("id IN (?)", @lhp_ids.uniq).page(params[:page])
           
         ### KABIDWAS
         elsif current_admin_user.has_role?("Kabidwas")
@@ -136,11 +136,8 @@ ActiveAdmin.register Lhp do
         ### ANGGOTA TIM
         elsif current_admin_user.has_role?("Anggota Tim")
           @lhps = Lhp.where("id IN (?)", current_admin_user.teams.map(&:lhp_id)).page(params[:page])
-          
-        else
-          @lhps = Lhp.where(:entity_id => current_admin_user.entity.id).page(params[:page])
-        end
         
+        end
         format.html
         
       end
@@ -161,6 +158,20 @@ ActiveAdmin.register Lhp do
     redirect_to admin_lhps_path 
   end
   
+  member_action :ketua_tim_send_lhp, :method => :put do
+    lhp = Lhp.find(params[:id])
+    lhp.dikirim_ketua_tim
+    flash[:notice] = "Success Sent"
+    redirect_to admin_lhps_path 
+  end
+  
+  member_action :anggota_tim_send_lhp, :method => :put do
+    lhp = Lhp.find(params[:id])
+    lhp.dikirim_anggota_tim
+    flash[:notice] = "Success Sent"
+    redirect_to admin_lhps_path 
+  end
+  
   member_action :accept_lhp, :method => :put do
     lhp = Lhp.find(params[:id])
     lhp.disetujui
@@ -170,7 +181,8 @@ ActiveAdmin.register Lhp do
   
   member_action :send_back_lhp, :method => :put do
     lhp = Lhp.find(params[:id])
-    lhp.dikembalikan
+    puts params[:notes]
+    #lhp.dikembalikan
     flash[:notice] = "Success Sent Back"
     redirect_to admin_lhps_path 
   end

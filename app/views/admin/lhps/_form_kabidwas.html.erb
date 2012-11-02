@@ -29,7 +29,7 @@
 	      <%= f.input :penutup, :input_html => { :disabled => flag } %>
 	      <%= f.input :status_mock, :label => "Status", :input_html => { :value => f.object.status, :disabled => true } %>
 	      <%= f.input :updated_at_mock, :label => "Tanggal", :input_html => { :value => f.object.updated_at.strftime("%d %B %Y") , :disabled => true }   %>
-	      <%= f.input :catatan_pengembalian_mock,  :label => "Catatan Pengembalian", :input_html => { :value => f.object.catatan_pengembalian, :disabled => true } %>
+	      <%= f.input :catatan_pengembalian,  :label => "Catatan Pengembalian", :input_html => { :value => f.object.catatan_pengembalian, :disabled => !(f.object.status == "Dikirim oleh Ketua Tim") } %>
 	    <% end %>
 	    
 	    <%= f.inputs "Hasil Pemeriksaan" do %>

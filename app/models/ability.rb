@@ -7,6 +7,7 @@ class Ability
     if admin_user.has_role? "Admin"
       can :manage, AdminUser
       can :manage, Entity
+      can :manage, WorkPlanCategory
     end
     
     if admin_user.has_role? "Korwaswil"
@@ -22,6 +23,7 @@ class Ability
     if admin_user.has_role? "Kepala SPI"
       can :manage, Pkpt
       can :manage, Lhp
+      can :read, WorkPlan
       can :manage, Recapitulation
     end
     
