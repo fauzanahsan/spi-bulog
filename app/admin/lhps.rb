@@ -2,7 +2,6 @@ ActiveAdmin.register Lhp do
   #config.clear_sidebar_sections!
   menu :label => "LHP", :if => proc{ can?(:manage, Lhp) }
   controller.authorize_resource
-  #scope_to lambda { current_admin_user.own_team_id.include? :team_managed}
   
   filter :entity, :label => "Entitas", :collection => Hash[Entity.all.map{|e| [e.entitas,e.id]}]
   filter :keterangan
@@ -112,30 +111,37 @@ ActiveAdmin.register Lhp do
         
         ### KORWASWIL
         if current_admin_user.has_role?("Korwaswil")
-          @lhp = []
+          @lhp_ids = []
+          @lhps = []
           Lhp.all.each do |lhp|
-            @lhp << lhp if lhp.work_plan.pkpt.entity.wilayah == current_admin_user.entity.wilayah
+            @lhp_ids << lhp.id if lhp.work_plan.pkpt.entity.wilayah == current_admin_user.entity.wilayah
           end
         
+          @lhps = Lhp.where("id IN (?)", @lhp_ids).page(params[:page])
+          
         ### KABIDWAS
         elsif current_admin_user.has_role?("Kabidwas")
           @lhps = Lhp.where(:entity_id => current_admin_user.entity.id).page(params[:page])
+        
+        ### KETUA TIM
+        elsif current_admin_user.has_role?("Ketua Tim")
+          @lhp_ids = []
+          @lhps = []
+          
+          Team.all.each do |tim|
+            @lhp_ids << tim.lhp_id if tim.leader_id == current_admin_user.id
+          end
+          @lhps = Lhp.where("id IN (?)", @lhp_ids).page(params[:page])
           
         ### ANGGOTA TIM
         elsif current_admin_user.has_role?("Anggota Tim")
           @lhps = Lhp.where("id IN (?)", current_admin_user.teams.map(&:lhp_id)).page(params[:page])
           
-          # Lhp.all.each do |lhp|
-          #    if current_admin_user.teams.map(&:id).include? lhp.team.id
-          #      @lhps << lhp 
-          #    end
-          #  end
-          
-          format.html
         else
           @lhps = Lhp.where(:entity_id => current_admin_user.entity.id).page(params[:page])
         end
         
+        format.html
         
       end
     end
