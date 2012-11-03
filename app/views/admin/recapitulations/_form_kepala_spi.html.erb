@@ -20,7 +20,7 @@
             <tr>
               <td><%= link_to("#{pp.entity.entitas}", admin_pkpt_path(pp.id)) %></td>
               <td><%= "Wilayah #{pp.entity.wilayah}" %></td>
-              <td><%= link_to("Setujui", approve_admin_pkpt_path(pp.id)) unless pp.status == "Disetujui"  %></td>
+              <td><%= link_to("Setujui", approve_admin_pkpt_path(pp.id), :method => :put) unless pp.status == "Disetujui"  %></td>
             <tr>
           <% end %>
         </table>
@@ -33,7 +33,6 @@
   <% end %>
   
   <%= f.actions do %>
-    <!-- <li class="button"><%#= link_to "Setujui", accept_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li> -->
     <li class="button"><%= link_to "Cetak", accept_lhp_admin_lhp_path(:id => f.object.id), :method => :put, :class => "button" %></li>
   <% end %>
   
