@@ -1,5 +1,14 @@
 <% if current_admin_user.has_role?("Kepala SPI") %>
-  <%= render :partial => "form_kepala_spi" %>
+  <% if ["edit", "update"].include? params[:action] %>
+    <%= render :partial => "form_kepala_spi" %>
+  <% else %>
+    <%= render :partial => "new_form_kepala_spi" %>
+  <% end %>
+
 <% elsif current_admin_user.has_role?("Staff Tata Usaha") %>
-  <%= render :partial => "form_tata_usaha" %>
+  <% if ["edit", "update"].include? params[:action] %>
+    <%= render :partial => "form_tata_usaha" %>
+  <% else %>
+    <%= render :partial => "new_form_tata_usaha" %>
+  <% end %>
 <% end %>

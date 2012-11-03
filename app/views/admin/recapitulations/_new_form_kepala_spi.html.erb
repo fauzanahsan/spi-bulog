@@ -1,0 +1,35 @@
+<%= semantic_form_for [:admin, @recapitulation] do |f| %>
+  <%= f.inputs do %>
+    <%= f.input :periode, :as => :select, :collection => ['2012', '2013', '2014'] %>
+    
+    <%= f.input :keterangan_pembuka, :label => "Keterangan Pembuka" %>
+    
+    <% if !f.object.new_record? %>    
+      <%= f.inputs "PKPT" do %>
+        <table>
+          <tr>
+            <th>Entitas</th>
+            <th>Wilayah</th>
+            <th>Proses</th>
+          </tr>
+          <% Pkpt.all.each do |pp| %>
+            <tr>
+              <td><%= link_to("#{pp.entity.entitas}", admin_pkpt_path(pp.id)) %></td>
+              <td><%= "Wilayah #{pp.entity.wilayah}" %></td>
+              <td><%= link_to("Setujui", approve_admin_pkpt_path(pp.id)) unless pp.status == "Disetujui"  %></td>
+            <tr>
+          <% end %>
+        </table>
+      <% end %>
+      
+    <% end %>
+    
+    <%= f.input :keterangan_penutup, :label => "Keterangan Penutup" %>
+  
+  <% end %>
+  
+  <%= f.actions do %>
+    <%= f.action :submit, :label => "Simpan" %>
+  <% end %>
+  
+<% end %>
